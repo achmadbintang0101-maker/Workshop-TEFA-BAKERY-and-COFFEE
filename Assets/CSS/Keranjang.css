@@ -1,0 +1,168 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+        
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #222; 
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-container {
+    width: 360px;
+    height: 750px; 
+    background-color: #F4ECE6; /* Warna latar belakang persis desain */
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    padding-top: 30px;
+}
+
+/* --- HEADER --- */
+.header-nota {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.header-nota h1 {
+    color: #8C786D;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* --- KATEGORI TAB --- */
+.categories { display: flex; gap: 15px; padding: 0 25px 15px 25px; flex-shrink: 0; }
+.cat-btn { 
+    padding: 8px 16px; border-radius: 12px; border: none; 
+    font-weight: 700; font-size: 14px; cursor: pointer; font-family: 'Inter', sans-serif;
+}
+.cat-btn.active { background-color: #6D3D22; color: #FFF; box-shadow: 0 4px 6px rgba(109, 61, 34, 0.2); }
+.cat-btn.inactive { background-color: transparent; color: #B29B8C; }
+
+/* --- KERANJANG LIST --- */
+.cart-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.cart-list::-webkit-scrollbar { width: 0; } 
+
+/* Item Card */
+.cart-item {
+    display: flex;
+    gap: 15px;
+}
+.cart-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+.cart-details {
+    flex: 1;
+    background-color: #FFFCF9; /* Kotak putih di sebelah gambar */
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+.item-name { font-size: 16px; font-weight: 700; color: #786052; }
+.item-meta { display: flex; justify-content: space-between; font-size: 12px; color: #B29B8C; font-weight: 600; margin-top: 4px; }
+
+/* Kontrol Plus Minus */
+.qty-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid #6D3D22;
+    border-radius: 6px;
+    width: fit-content;
+    overflow: hidden;
+    margin-top: 8px;
+}
+.qty-btn {
+    border: none;
+    background: transparent;
+    color: #6D3D22;
+    font-size: 16px;
+    font-weight: 700;
+    width: 30px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.qty-btn.plus {
+    background-color: #6D3D22;
+    color: #FFF;
+}
+.qty-number {
+    font-size: 14px;
+    font-weight: 700;
+    color: #6D3D22;
+    padding: 0 12px;
+}
+
+/* --- SUMMARY BOX --- */
+.summary-card {
+    background-color: #EFE4DA; /* Warna box summary */
+    margin: 15px 20px 20px 20px;
+    padding: 20px;
+    border-radius: 15px;
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.border-bottom {
+    border-bottom: 1px solid #D7C6B8;
+    padding-bottom: 12px;
+}
+.summary-label { font-size: 16px; color: #8C786D; font-weight: 600; }
+.summary-value { font-size: 16px; color: #6D3D22; font-weight: 700; }
+.total-row { margin-top: 12px; margin-bottom: 20px; }
+.summary-total { font-size: 22px; color: #502A14; font-weight: 800; }
+
+/* --- BUTTONS --- */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+.btn {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    color: white;
+}
+.btn-back { background-color: #8A5A44; }
+.btn-complete { background-color: #6D3D22; }
+
+/* --- ANIMASI --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.card-container {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease-in-out;
+}

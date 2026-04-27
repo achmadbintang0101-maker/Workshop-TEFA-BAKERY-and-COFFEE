@@ -1,0 +1,99 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+        
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #222; 
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container utama dengan pembagian 2 warna background */
+.qris-container {
+    width: 360px;
+    height: 750px; 
+    max-height: 95vh;
+    /* Pembagian warna background: 19% atas terang, sisanya krem */
+    background: linear-gradient(to bottom, #FCF6F0 19%, #EBE0D5 19%); 
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* --- IKON ATAS --- */
+.icon-wrapper {
+    margin-top: 80px; /* Diatur agar pas berada di tengah garis perbatasan warna */
+    background-color: #FCF6F0;
+    border-radius: 50%;
+    padding: 8px; /* Memberikan bingkai putih alami */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.pay-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* --- TEKS JUDUL --- */
+.qr-title {
+    color: #5C3A21; /* Cokelat gelap khas TEFA */
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+/* --- GAMBAR QR CODE --- */
+.qr-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.qr-image {
+    width: 230px; /* Ukuran barcode agak besar agar mudah di-scan */
+    height: 230px;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Sedikit bayangan di belakang barcode */
+    background-color: #FFF;
+}
+
+/* --- TOMBOL BACK --- */
+.btn-back-qris {
+    width: 230px; /* Lebar disamakan dengan lebar QR Code seperti desain */
+    height: 55px;
+    margin-top: 35px;
+    background: linear-gradient(to bottom, #7C4C33, #5A3622); 
+    color: #FFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(90, 54, 34, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn-back-qris:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 6px rgba(90, 54, 34, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Animasi --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease-in-out;
+}

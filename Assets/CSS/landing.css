@@ -1,0 +1,489 @@
+/* --- Konfigurasi Warna & Font Dasar --- */
+:root {
+  --bg-color: #faf5f0;
+  --primary-brown: #5c3d2e;
+  --secondary-brown: #8b5e34;
+  --accent-orange: #d97736;
+  --text-dark: #2c1e16;
+  --white: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-dark);
+}
+
+/* --- HEADER --- */
+header {
+  background-color: var(--primary-brown);
+  /* Tidak ada gap/border antar navbar dan instansi-strip,
+     keduanya menyatu dalam satu blok cokelat */
+}
+
+/* --- NAVBAR (baris utama) --- */
+.navbar {
+  padding: 14px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-tefa {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand {
+  color: var(--white);
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--white);
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--accent-orange);
+}
+
+.btn-login-nav {
+  background-color: var(--bg-color);
+  color: var(--primary-brown);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 15px;
+  transition: 0.3s;
+}
+
+.btn-login-nav:hover {
+  background-color: var(--accent-orange);
+  color: var(--white);
+}
+
+/* --- INSTANSI STRIP (baris bawah header) --- */
+.instansi-strip {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 7px 50px;
+  background-color: rgba(0, 0, 0, 0.15); /* sedikit lebih gelap agar terkesan "sub-bar" */
+}
+
+.instansi-inner {
+  display: inline-flex; /* Agar lebarnya menyesuaikan isi logo saja */
+  align-items: center;
+  gap: 14px;
+  justify-content: center;
+  
+  /* Tambahan efek kapsul putih semi-transparan */
+  background-color: rgba(255, 255, 255, 0.9); 
+  padding: 5px 25px;
+  border-radius: 50px; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Pastikan instansi-strip menggunakan text-align center agar kapsulnya di tengah */
+.instansi-strip {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 50px;
+  background-color: rgba(0, 0, 0, 0.15); 
+  text-align: center; /* Tambahkan ini */
+}
+
+/* Banner Polije — horizontal memanjang */
+.banner-polije {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Divider vertikal antara banner dan logo bulat */
+.strip-divider {
+  width: 1px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+/* Logo jurusan — samakan tinggi dengan banner Polije */
+.logo-bulat {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* --- HERO SECTION --- */
+.hero {
+  height: 80vh;
+  background:
+    linear-gradient(rgba(44, 30, 22, 0.7), rgba(44, 30, 22, 0.7)),
+    url("https://via.placeholder.com/1200x800.png?text=Background+Toko+Kopi+Gelap")
+      center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: var(--white);
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.btn-cta {
+  display: inline-block;
+  background-color: var(--accent-orange);
+  color: var(--white);
+  padding: 15px 35px;
+  text-decoration: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-cta:hover {
+  background-color: #bf662d;
+  transform: translateY(-2px);
+}
+
+/* --- ABOUT & SEJARAH --- */
+.about-section {
+  padding: 80px 50px;
+  background-color: var(--white);
+}
+
+.about-container {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.about-text {
+  width: 50%;
+  padding-right: 20px;
+}
+
+.about-text h2 {
+  color: var(--primary-brown);
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.about-text h3 {
+  margin-top: 20px;
+  color: var(--secondary-brown);
+  margin-bottom: 10px;
+}
+
+.about-text p {
+  line-height: 1.6;
+  color: #555;
+}
+
+.about-image {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  grid-template-rows: repeat(2, 1fr) !important;
+  gap: 15px;
+  width: 100%;
+  max-width: 450px;
+  aspect-ratio: 1 / 1;
+}
+
+.grid-item {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border: 1px solid #e0d5c1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-item img {
+  width: 85%;
+  height: 85%;
+  object-fit: contain !important;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.grid-item:hover img {
+  transform: scale(1.08);
+}
+
+/* --- PRODUK --- */
+.produk-section {
+  padding: 80px 50px;
+  text-align: center;
+}
+
+.produk-section h2 {
+  color: var(--primary-brown);
+  font-size: 2rem;
+  margin-bottom: 40px;
+}
+
+.produk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.produk-card {
+  background: var(--white);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+}
+
+.produk-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.produk-card img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.produk-card h3 {
+  color: var(--primary-brown);
+  margin-bottom: 10px;
+}
+
+.produk-card p {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* --- FOOTER --- */
+footer {
+  background-color: var(--primary-brown);
+  color: var(--white);
+  padding: 50px 50px 20px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 0 auto 30px;
+}
+
+.footer-info h3 {
+  margin-bottom: 15px;
+  color: var(--accent-orange);
+}
+
+.footer-info p {
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+/* --- MODAL POP-UP LOGIN --- */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(44, 30, 22, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+.modal-box {
+  background-color: var(--bg-color);
+  margin: 8% auto;
+  padding: 40px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 450px;
+  position: relative;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  animation: modalMuncul 0.3s ease-out;
+}
+
+@keyframes modalMuncul {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: var(--primary-brown);
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.icon-coffee {
+  font-size: 2.5rem;
+}
+
+.modal-header h2 {
+  color: var(--primary-brown);
+  margin: 10px 0 5px;
+}
+
+.modal-header p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.role-selector {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.role-option {
+  flex: 1;
+  cursor: pointer;
+}
+
+.role-option input {
+  display: none;
+}
+
+.role-card {
+  border: 2px solid #e0d5c1;
+  border-radius: 12px;
+  padding: 15px 10px;
+  text-align: center;
+  background: var(--white);
+  transition: 0.2s;
+}
+
+.role-icon {
+  display: block;
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+
+.role-title {
+  display: block;
+  font-weight: bold;
+  color: var(--primary-brown);
+  margin-bottom: 3px;
+}
+
+.role-desc {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.role-option input:checked + .role-card {
+  border-color: var(--accent-orange);
+  background-color: rgba(217, 119, 54, 0.05);
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #e0d5c1;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: var(--white);
+  color: var(--text-dark);
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+}
+
+.btn-submit-login {
+  width: 100%;
+  background-color: var(--primary-brown);
+  color: var(--white);
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+.btn-submit-login:hover {
+  background-color: var(--accent-orange);
+}

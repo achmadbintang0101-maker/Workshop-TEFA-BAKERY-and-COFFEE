@@ -1,0 +1,125 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+        
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #222; 
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Efek Muncul Halus saat halaman pertama kali dibuka */
+.card-container {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Class tambahan untuk efek menghilang saat tombol diklik (untuk Back/View Order) */
+.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Efek tombol kategori membal/mengecil saat diklik */
+.cat-btn {
+    transition: transform 0.1s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.cat-btn:active {
+    transform: scale(0.92);
+}
+
+.card-container {
+    width: 360px;
+    height: 750px; 
+    max-height: 95vh;
+    background-color: #F1E7DD; 
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* Header */
+.header { position: relative; height: 160px; flex-shrink: 0; }
+.header img { width: 100%; height: 100%; object-fit: cover; }
+.header h1 {
+    position: absolute; top: 50%; left: 25px; transform: translateY(-50%);
+    color: #E2CDC0; 
+    font-size: 38px; 
+    font-weight: 800; 
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    letter-spacing: -0.5px; 
+    transition: opacity 0.2s ease; /* Transisi halus saat judul berganti */
+}
+
+/* Categories */
+.categories { display: flex; gap: 15px; padding: 20px 25px; flex-shrink: 0; }
+.cat-btn { 
+    padding: 8px 20px; border-radius: 20px; border: none; 
+    font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+}
+.cat-btn.active { background-color: #6D3D22; color: #FFF; box-shadow: 0 4px 8px rgba(109, 61, 34, 0.3); }
+.cat-btn.inactive { background-color: transparent; color: #B29B8C; }
+.cat-btn.inactive:hover { background-color: rgba(109, 61, 34, 0.1); }
+
+/* Menu List */
+.menu-list { flex: 1; overflow-y: auto; padding: 0 25px 20px 25px; display: flex; flex-direction: column; gap: 12px; }
+.menu-list::-webkit-scrollbar { width: 0; } 
+.menu-item { display: flex; gap: 15px; background-color: #EBE0D5; padding: 12px; border-radius: 16px; align-items: center; }
+.menu-img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.menu-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.menu-name { font-size: 17px; font-weight: 700; color: #786052; margin-bottom: 2px; }
+.menu-price { font-size: 14px; color: #A58F81; margin-bottom: 6px; font-weight: 500; }
+.menu-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #A58F81; font-weight: 500; }
+.stars { color: #F5A623; font-size: 13px; letter-spacing: 1px; }
+.stok-habis { color: #C1A696; font-style: italic; }
+
+/* Add Button */
+.add-btn { 
+    background-color: #6D3D22; color: white; border: none; 
+    padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; 
+    cursor: pointer; box-shadow: 0 2px 4px rgba(109, 61, 34, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Tombol Add saat stok habis */
+.add-btn:disabled {
+    background-color: #C1A696;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+/* Bottom Bar */
+.bottom-bar { 
+    flex-shrink: 0; padding: 15px 25px; background-color: #F1E7DD; 
+    border-top: 1px solid #432818; display: flex; gap: 15px; align-items: center; 
+}
+.bottom-img { width: 75px; height: 75px; border-radius: 12px; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.bottom-info { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.bottom-name { font-size: 17px; font-weight: 700; color: #6D3D22; }
+.bottom-price { font-size: 14px; color: #6D3D22; font-weight: 500; margin-bottom: 4px; }
+.bottom-actions { display: flex; gap: 10px; }
+.btn-action { 
+    flex: 1; padding: 9px 0; text-align: center; border-radius: 8px; 
+    font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; box-shadow: 0 2px 4px rgba(109, 61, 34, 0.2); 
+    transition: transform 0.1s ease;
+}
+.btn-action:active { transform: scale(0.95); }
+.btn-back { background-color: #8A573F; color: white; border: none; }
+.btn-view { background-color: #6D3D22; color: white; border: none; }

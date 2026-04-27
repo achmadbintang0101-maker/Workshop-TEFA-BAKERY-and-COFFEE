@@ -1,0 +1,174 @@
+/* Reset dasar untuk menghilangkan margin bawaan */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    /* Mengembalikan warna luar menjadi putih/abu bersih */
+    background-color: #F8F9FA; 
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+/* Container utama (Card) */
+.card-container {
+    width: 360px;
+    height: 750px; 
+    max-height: 95vh;
+    background-color: #F4EAE4;
+    border-radius: 20px; 
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* Bayangan diperlembut */
+    /* Animasi muncul melayang yang elegan */
+    animation: floatUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; 
+}
+
+@keyframes floatUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease-in-out;
+}
+
+/* --- BAGIAN ATAS (Gambar Header) --- */
+.card-header {
+    position: relative;
+    flex: 1; 
+    background-color: #855035;
+}
+
+.bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block; /* Menghilangkan garis celah misterius di bawah gambar */
+}
+
+.brand-title {
+    position: absolute;
+    top: 30px;
+    left: 25px;
+    color: #D3B9A3; 
+    font-family: 'EB Garamond', serif; 
+    font-size: 34px; 
+    font-weight: 700;
+    line-height: 1.2;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5); 
+}
+
+/* --- BAGIAN BAWAH (Pilihan Order) --- */
+.card-body {
+    padding: 30px 25px 40px 25px; 
+    flex-shrink: 0;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.title-icon {
+    width: 28px;
+    height: auto;
+}
+
+.section-title h2 {
+    color: #855035; 
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Container Tombol */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+/* Desain Dasar Tombol dengan EFEK HIDUP */
+.btn {
+    width: 145px; 
+    height: 170px; 
+    border-radius: 30px;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+    /* Transisi untuk animasi pantulan */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+}
+
+/* Saat Kursor di Atas Tombol (Hover) */
+.btn:hover {
+    transform: translateY(-5px) scale(1.02); /* Tombol membesar dan naik sedikit */
+    box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Saat Tombol Ditekan (Active) */
+.btn:active {
+    transform: translateY(2px) scale(0.95); /* Efek membal ke dalam saat ditekan */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+    width: 60px;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+/* Ikon ikut bergerak saat tombol disentuh */
+.btn:hover .btn-icon {
+    transform: scale(1.1) rotate(-5deg); 
+}
+
+/* Spesifik Tombol Dine In */
+.btn-dine-in {
+    background-color: #855035;
+    color: #D3B9A3;
+}
+
+/* Spesifik Tombol Take Away */
+.btn-take-away {
+    background-color: #FCF2E9;
+    color: #ae9689;
+}
+
+/* Lingkaran "or" di tengah */
+.or-divider {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    background-color: #FFFFFF;
+    color: #ae9689;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+    z-index: 10;
+}

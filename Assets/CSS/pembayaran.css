@@ -1,0 +1,132 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+        
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #222; 
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container dengan background dua warna (Two-tone) */
+.payment-container {
+    width: 360px;
+    height: 750px; 
+    max-height: 95vh;
+    /* Membuat efek dua warna: 22% atas terang, sisanya krem gelap */
+    background: linear-gradient(to bottom, #FCF6F0 22%, #EBE0D5 22%); 
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* --- ICON KOPI (Menyesuaikan desain lingkaran berlapis) --- */
+.icon-wrapper {
+    margin-top: 60px; /* Jarak dari atas layar */
+}
+.icon-ring-outer {
+    background-color: #F6EBE1; /* Cincin terluar yang pudar */
+    padding: 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.icon-ring-inner {
+    background-color: #FFF; /* Cincin putih di dalam */
+    padding: 6px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.coffee-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* --- TEKS HEADER --- */
+.payment-header {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 40px;
+}
+.payment-header h2 {
+    color: #5C3A21;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+.payment-header p {
+    color: #7D6050;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* --- TOMBOL QRIS --- */
+.payment-options {
+    width: 100%;
+    padding: 0 30px;
+}
+.btn-qris {
+    width: 100%;
+    height: 75px;
+    background-color: transparent;
+    border: 2px solid #5C3A21; /* Garis tepi cokelat gelap */
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+.btn-qris:active {
+    transform: scale(0.97);
+    background-color: rgba(92, 58, 33, 0.05);
+}
+.qris-logo {
+    width: 100px; /* Sesuaikan ukuran logo QRIS nantinya */
+    height: auto;
+    object-fit: contain;
+}
+
+/* --- TOMBOL BACK (Dengan efek 3D seperti desain) --- */
+.btn-back-payment {
+    width: calc(100% - 60px); /* Margin kiri kanan 30px */
+    position: absolute;
+    bottom: 220px; /* Posisi diangkat ke atas sedikit sesuai gambar */
+    height: 60px;
+    /* Gradient warna cokelat agar terlihat 3D/timbul */
+    background: linear-gradient(to bottom, #7C4C33, #5A3622); 
+    color: #FFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    /* Efek bayangan untuk mempertegas bentuk 3D */
+    box-shadow: 0 6px 12px rgba(90, 54, 34, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn-back-payment:active {
+    transform: translateY(2px); /* Efek tombol ditekan */
+    box-shadow: 0 2px 6px rgba(90, 54, 34, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Animasi --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease-in-out;
+}
