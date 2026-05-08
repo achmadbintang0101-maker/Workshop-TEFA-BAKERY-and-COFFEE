@@ -1,38 +1,17 @@
 <?php 
 // 1. Proteksi Halaman & Koneksi
-include '../Config/auth.php'; 
-include '../Config/koneksi.php';
-
-// Menentukan halaman aktif untuk sidebar
 $page = 'manajemen_staff';
+include '../Config/auth.php'; 
+include '../Classes/Database.php';
+include '../Classes/User.php';
 
-// 2. Logika Tambah Staff
-if(isset($_POST['simpan_staff'])) {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $nama     = mysqli_real_escape_string($conn, $_POST['nama']);
-    $email    = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password'];
-    $role     = $_POST['role'];
-
-    // Enkripsi Password (HASH)
-    $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-    // Cek apakah email sudah terdaftar
-    $cek_email = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
-    if(mysqli_num_rows($cek_email) > 0) {
-        echo "<script>alert('Error: Email sudah digunakan staff lain!');</script>";
-    } else {
-        $query = "INSERT INTO users (username, nama, email, password, role) 
-                  VALUES ('$username', '$nama', '$email', '$password_hash', '$role')";
-        
-        if(mysqli_query($conn, $query)) {
-            echo "<script>alert('Staff baru berhasil didaftarkan!'); window.location='manajemen_staff.php';</script>";
-        }
-    }
-}
+// 2. Bangun Object (Instansiasi)
+$database = new Database();
+$conn = $database->getConnection();
+$userObj = new User($conn); 
 
 // 3. Ambil Data Semua Staff untuk Tabel
-$tampil_staff = mysqli_query($conn, "SELECT id_user, nama, email, role FROM users ORDER BY role ASC");
+$tampil_staff = $userObj->getAllUsers();
 ?>
 
 <!DOCTYPE html>
@@ -55,7 +34,7 @@ $tampil_staff = mysqli_query($conn, "SELECT id_user, nama, email, role FROM user
             <div class="card">
                 <h3>+ Tambah Staff Baru</h3>
                 <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">Daftarkan akun Admin atau Kasir baru di sini.</p>
-                <form action="" method="POST">
+                <form action="../Controllers/UserController.php" method="POST">
                     <div class="form-row">
                         <div class="input-group">
                             <label>Username</label>
@@ -111,7 +90,7 @@ $tampil_staff = mysqli_query($conn, "SELECT id_user, nama, email, role FROM user
                                 </span>
                             </td>
                             <td>
-                               <a href="hapus_staff.php?id=<?= $row['id_user']; ?>" 
+                              <a href="../Controllers/UserController.php?action=delete&id=<?= $row['id_user']; ?>" 
    class="btn-delete" 
    onclick="return confirm('Yakin ingin menghapus staff ini?')">Hapus</a>
                             </td>

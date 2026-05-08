@@ -24,12 +24,6 @@ if (!isset($page)) {
       </svg>Order
     </a>
     
-    <a class="nav-item <?= ($page == 'produksi') ? 'active' : '' ?>" href="produksi.php">
-      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
-      </svg>Produksi
-    </a>
-    
     <a class="nav-item <?= ($page == 'inventory') ? 'active' : '' ?>" href="inventory.php">
       <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
@@ -57,7 +51,7 @@ if (!isset($page)) {
   </nav>
 
   <div class="sidebar-logout">
-    <a href="../Index.php" class="logout-btn">
+    <a href="../logout.php" class="logout-btn">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
       </svg>Log Out

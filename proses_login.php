@@ -3,59 +3,64 @@
 session_start();
 
 // Memanggil file koneksi 
-include 'Config/koneksi.php';
+include 'Classes/Database.php'; 
 
-// Mengecek apakah file ini diakses melalui form (metode POST)
-// Mencegah akses langsung via pengetikan URL (metode GET)
+// Bangun Object Database
+$database = new Database();
+$conn = $database->getConnection();
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    // Menangkap inputan dari form
+    // 1. Menangkap inputan dari form (Hanya Email & Password)
     $email    = mysqli_real_escape_string($conn, $_POST['email']);
     $password = $_POST['password'];
-    $role     = $_POST['role'];
 
-    // Mencari user berdasarkan email dan role yang dipilih
-    $query  = "SELECT * FROM users WHERE email = '$email' AND role = '$role'";
+    // 2. Mencari user berdasarkan email SAJA
+    $query  = "SELECT * FROM users WHERE email = '$email'";
     $result = mysqli_query($conn, $query);
 
-    // Jika email dan role ditemukan di database
+    // Jika email ditemukan di database
     if (mysqli_num_rows($result) === 1) {
         
         $row = mysqli_fetch_assoc($result);
 
-        // Memeriksa kecocokan password ketikan dengan password hash di database
+        // 3. Memeriksa kecocokan password
         if (password_verify($password, $row['password'])) {
             
             // Jika COCOK, buat Session
             $_SESSION['id_user']  = $row['id_user'];
             $_SESSION['username'] = $row['username'];
             $_SESSION['nama']     = $row['nama'];
-            $_SESSION['role']     = $row['role'];
+            
+            // 4. Ambil role murni dari Database (Single Source of Truth)
+            $_SESSION['role']     = $row['role']; 
             $_SESSION['status']   = "login";
 
-            // Arahkan ke halaman masing-masing sesuai role
+            // 5. Routing Otomatis: Arahkan ke halaman masing-masing sesuai role dari DB
             if ($row['role'] == "admin") {
                 header("location: admin/dashboard.php");
-            } else {
-                // Pastikan penulisan folder Kasir sesuai huruf besar/kecil di foldermu
+            } else if ($row['role'] == "kasir") {
                 header("location: Kasir/index.php"); 
+            } else {
+                // Jika role tidak dikenali (mencegah error)
+                header("location: Index.php?pesan=gagal");
             }
             exit;
             
         } else {
-            // Jika PASSWORD SALAH, lempar kembali ke landing page dengan pesan gagal
+            // Jika PASSWORD SALAH
             header("location: Index.php?pesan=gagal");
             exit;
         }
         
     } else {
-        // Jika EMAIL / ROLE TIDAK DITEMUKAN, lempar kembali ke landing page
+        // Jika EMAIL TIDAK DITEMUKAN
         header("location: Index.php?pesan=gagal");
         exit;
     }
     
 } else {
-    // Jika file ini diakses langsung (diketik manual di URL), tendang kembali ke Index
+    // Jika diakses manual via URL
     header("location: Index.php");
     exit;
 }

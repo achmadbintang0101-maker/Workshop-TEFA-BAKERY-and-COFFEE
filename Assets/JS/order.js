@@ -1,33 +1,6 @@
-// DATA
-let allData = [
-  { id:1, no:'01', orderId:'Mahasiswa', tanggal:'2026-03-17', jumlah:10,  status:'Proses',  aksiNum:10 },
-  { id:2, no:'02', orderId:'Dosen TI',  tanggal:'2026-03-17', jumlah:100, status:'Proses',  aksiNum:null },
-  { id:3, no:'03', orderId:'Mahasiswa', tanggal:'2026-03-17', jumlah:5,   status:'Selesai', aksiNum:null },
-  { id:4, no:'04', orderId:'Mahasiswa', tanggal:'2026-03-17', jumlah:15,  status:'Selesai', aksiNum:null },
-  { id:5, no:'05', orderId:'Staff TU',  tanggal:'2026-04-01', jumlah:20,  status:'Proses',  aksiNum:8 },
-  { id:6, no:'06', orderId:'Karyawan',  tanggal:'2026-04-05', jumlah:30,  status:'Selesai', aksiNum:null },
-  { id:7, no:'07', orderId:'Mahasiswa', tanggal:'2026-04-10', jumlah:12,  status:'Proses',  aksiNum:null },
-  { id:8, no:'08', orderId:'Dosen FEB', tanggal:'2026-04-15', jumlah:50,  status:'Proses',  aksiNum:null },
-];
-
-let activities = [
-  { time:'09:00', date:'21 April 2026', title:'Order Baru Masuk', sub:'Mahasiswa — 10 pcs', type:'orange' },
-  { time:'09:30', date:'21 April 2026', title:'Order Diproses', sub:'Dosen TI — 100 pcs', type:'orange' },
-  { time:'10:00', date:'21 April 2026', title:'Order Selesai', sub:'Mahasiswa — 5 pcs', type:'green' },
-  { time:'10:20', date:'21 April 2026', title:'Order Selesai', sub:'Mahasiswa — 15 pcs', type:'green' },
-  { time:'11:00', date:'20 April 2026', title:'Order Baru Masuk', sub:'Staff TU — 20 pcs', type:'orange' },
-  { time:'13:00', date:'20 April 2026', title:'Order Selesai', sub:'Karyawan — 30 pcs', type:'green' },
-  { time:'08:30', date:'19 April 2026', title:'Order Baru Masuk', sub:'Mahasiswa — 12 pcs', type:'orange' },
-  { time:'14:00', date:'18 April 2026', title:'Order Baru Masuk', sub:'Dosen FEB — 50 pcs', type:'orange' },
-];
-
-let notifications = [
-  { id:1, type:'orange', text:'<strong>Mahasiswa</strong> — order 10 pcs sedang diproses.', time:'5 menit lalu', read:false },
-  { id:2, type:'orange', text:'<strong>Dosen TI</strong> — order 100 pcs sedang diproses.', time:'20 menit lalu', read:false },
-  { id:3, type:'green',  text:'Order <strong>Mahasiswa</strong> selesai. 5 pcs.', time:'1 jam lalu', read:false },
-  { id:4, type:'green',  text:'Order <strong>Mahasiswa</strong> selesai. 15 pcs.', time:'2 jam lalu', read:true },
-  { id:5, type:'gray',   text:'Laporan order harian telah dibuat.', time:'Kemarin', read:true },
-];
+// DATA PENAMPUNG
+let allData = [];
+let activities = [];
 
 const PER_PAGE = 5;
 let currentPage = 1;
@@ -35,9 +8,34 @@ let filteredData = [...allData];
 let editingId = null;
 let deletingId = null;
 let konfirmasiId = null;
-let nextId = 9;
 
-// RENDER TABLE
+// =========================================================
+// 1. FUNGSI FETCH: MENGAMBIL DATA DARI DATABASE (API)
+// =========================================================
+async function fetchOrders() {
+    try {
+        const response = await fetch('../Controllers/OrderController.php?action=get_all_orders');
+        const data = await response.json();
+        
+        allData = data;
+        
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        if (q) {
+            filteredData = allData.filter(r => r.orderId.toLowerCase().includes(q) || r.status.toLowerCase().includes(q));
+        } else {
+            filteredData = [...allData];
+        }
+        
+        renderTable();
+    } catch (error) {
+        console.error("Gagal mengambil data dari database:", error);
+        showToast("Gagal memuat data pesanan dari server", "error");
+    }
+}
+
+// =========================================================
+// 2. RENDER TABLE & UI
+// =========================================================
 function badgeHtml(s) {
   const map = { 'Selesai':'badge-green', 'Proses':'badge-orange' };
   return `<span class="badge ${map[s]||'badge-gray'}">${s}</span>`;
@@ -53,6 +51,13 @@ function renderTable() {
   const tbody = document.getElementById('tableBody');
   const start = (currentPage-1)*PER_PAGE;
   const pageData = filteredData.slice(start, start+PER_PAGE);
+
+  if (pageData.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="padding: 50px; text-align: center; color: #999;">Belum ada data pesanan di database.</td></tr>';
+      document.getElementById('pageInfo').textContent = 'Menampilkan 0 data';
+      document.getElementById('pageControls').innerHTML = '';
+      return;
+  }
 
   tbody.innerHTML = pageData.map(row => `
     <tr>
@@ -72,9 +77,6 @@ function renderTable() {
             <button class="btn-icon view-btn" onclick="openDetail(${row.id})" title="Lihat Detail">
               <svg width="13" height="13" fill="none" stroke="#4a80b5" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
-            <button class="btn-icon" onclick="openEdit(${row.id})" title="Edit">
-              <svg width="13" height="13" fill="none" stroke="#7a6a5a" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
             <button class="btn-icon" onclick="openDelete(${row.id})" title="Hapus">
               <svg width="13" height="13" fill="none" stroke="#7a6a5a" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
             </button>
@@ -86,7 +88,7 @@ function renderTable() {
 
   const total = filteredData.length;
   const end = Math.min(start+PER_PAGE, total);
-  document.getElementById('pageInfo').textContent = `Menampilkan ${total===0?0:start+1} sampai ${end} dari ${total}`;
+  document.getElementById('pageInfo').textContent = `Menampilkan ${start+1} sampai ${end} dari ${total}`;
   renderPagination(total);
 }
 
@@ -112,7 +114,9 @@ document.getElementById('searchInput').addEventListener('input', function() {
   renderTable();
 });
 
-// MODALS
+// =========================================================
+// 3. MODALS LOGIC UMUM
+// =========================================================
 function showModal(id) {
   document.querySelectorAll('.modal').forEach(m => m.style.display='none');
   document.getElementById(id).style.display='';
@@ -121,56 +125,136 @@ function showModal(id) {
 function closeModal() { document.getElementById('overlay').classList.remove('active'); editingId=null; deletingId=null; konfirmasiId=null; }
 function closeOverlay(e) { if(e.target===document.getElementById('overlay')) closeModal(); }
 
-// INPUT / EDIT
+// =========================================================
+// 4. FUNGSI INPUT MANUAL (REAL DARI DATABASE)
+// =========================================================
+let availableProducts = []; // Tempat menyimpan data roti asli dari database
+
+// Tarik data roti asli dengan memanfaatkan API yang sudah ada di ProductController
+async function fetchProductsForManual() {
+    try {
+        const response = await fetch('../Controllers/ProductController.php?action=api_get_products');
+        availableProducts = await response.json();
+    } catch (error) {
+        console.error("Gagal memuat daftar produk:", error);
+    }
+}
+
 function openInputModal() {
-  editingId = null;
-  document.getElementById('modalTitle').textContent = 'Tambah Order';
-  document.getElementById('btnSave').textContent = 'Simpan';
-  document.getElementById('fOrderId').value = '';
-  document.getElementById('fJumlah').value = '';
-  document.getElementById('fStatus').value = 'Proses';
-  document.getElementById('fTanggal').value = new Date().toISOString().split('T')[0];
+  document.getElementById('mNama').value = '';
+  document.getElementById('mRole').value = 'umum';
+  document.getElementById('mStatus').value = 'pending';
+  document.getElementById('produkContainer').innerHTML = ''; 
+  
+  tambahBarisProduk(); // Otomatis munculkan 1 baris keranjang kosong
   showModal('inputModal');
+}
+
+function tambahBarisProduk() {
+    const container = document.getElementById('produkContainer');
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.gap = '10px';
+    row.style.alignItems = 'flex-end';
+    row.style.marginBottom = '12px';
+    row.className = 'product-row';
+
+    // Loop data asli dari database ke dalam opsi dropdown
+    let optionsHtml = availableProducts.map(p => 
+        `<option value="${p.id}" data-price="${p.price}">${p.name} - Rp ${p.price.toLocaleString('id-ID')}</option>`
+    ).join('');
+
+    row.innerHTML = `
+        <div class="form-group" style="flex: 2;">
+            <label class="form-label" style="font-size: 10px;">Pilih Produk</label>
+            <select class="form-select product-select">
+                <option value="">-- Pilih Roti / Minuman --</option>
+                ${optionsHtml}
+            </select>
+        </div>
+        <div class="form-group" style="flex: 1;">
+            <label class="form-label" style="font-size: 10px;">Qty</label>
+            <input class="form-input product-qty" type="number" min="1" value="1" />
+        </div>
+        <button class="btn-icon" style="color: #e53935; height: 38px; width: 38px; flex-shrink: 0;" onclick="this.parentElement.remove()" title="Hapus Baris">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+    `;
+    container.appendChild(row);
+}
+
+async function simpanPesananManual() {
+    const btn = document.getElementById('btnSave');
+    const nama = document.getElementById('mNama').value.trim();
+    const role = document.getElementById('mRole').value;
+    const status = document.getElementById('mStatus').value;
+    
+    if (!nama) { showToast("Nama pemesan wajib diisi!", "error"); return; }
+    
+    // Kumpulkan semua data produk dari setiap baris yang ditambahkan
+    const rows = document.querySelectorAll('.product-row');
+    let items = [];
+    let isValid = true;
+    
+    rows.forEach(row => {
+        const select = row.querySelector('.product-select');
+        const qtyInput = row.querySelector('.product-qty');
+        
+        const id_product = select.value;
+        const qty = parseInt(qtyInput.value) || 0;
+        
+        if (!id_product || qty <= 0) {
+            isValid = false; // Tandai error jika ada baris yang belum dipilih rotinya
+        } else {
+            const price = parseFloat(select.options[select.selectedIndex].getAttribute('data-price'));
+            items.push({ id: id_product, qty: qty, price: price });
+        }
+    });
+    
+    if (!isValid || items.length === 0) {
+        showToast("Pastikan semua roti dipilih dan Qty lebih dari 0!", "error");
+        return;
+    }
+    
+    // Ubah tombol jadi "Menyimpan..."
+    btn.textContent = "Menyimpan...";
+    btn.disabled = true;
+    
+    try {
+        // Kirim data ke API backend
+        const response = await fetch('../Controllers/OrderController.php?action=create_manual_order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nama, role, status, items })
+        });
+        
+        const resData = await response.json();
+        
+        if (resData.status === 'success') {
+            showToast(resData.message, 'success');
+            closeModal();
+            // Refresh tabel & log aktivitas secara realtime!
+            await fetchOrders();
+            await fetchActivities();
+        } else {
+            showToast(resData.message, 'error');
+        }
+    } catch (error) {
+        showToast('Terjadi kesalahan jaringan saat menyimpan data', 'error');
+    } finally {
+        // Kembalikan tombol ke kondisi semula
+        btn.textContent = "Simpan Pesanan";
+        btn.disabled = false;
+    }
 }
 
 function openEdit(id) {
-  const item = allData.find(r=>r.id===id);
-  editingId = id;
-  document.getElementById('modalTitle').textContent = 'Edit Order';
-  document.getElementById('btnSave').textContent = 'Perbarui';
-  document.getElementById('fOrderId').value = item.orderId;
-  document.getElementById('fTanggal').value = item.tanggal;
-  document.getElementById('fJumlah').value = item.jumlah;
-  document.getElementById('fStatus').value = item.status;
-  showModal('inputModal');
+  showToast("Pesanan yang sudah masuk tidak bisa diedit untuk mencegah manipulasi data. Silakan Hapus/Void dan buat baru.", "error");
 }
 
-function saveData() {
-  const orderId = document.getElementById('fOrderId').value.trim();
-  const tanggal = document.getElementById('fTanggal').value;
-  const jumlah = parseInt(document.getElementById('fJumlah').value)||0;
-  const status = document.getElementById('fStatus').value;
-  if (!orderId||!tanggal||!jumlah) { showToast('Lengkapi semua field!','error'); return; }
-  if (editingId) {
-    const idx = allData.findIndex(r=>r.id===editingId);
-    allData[idx] = {...allData[idx], orderId, tanggal, jumlah, status};
-    showToast(`Order "${orderId}" berhasil diperbarui`, 'success');
-    addActivity('green', `Order diperbarui: ${orderId}`, status);
-  } else {
-    const noStr = String(nextId).padStart(2,'0');
-    allData.push({ id:nextId, no:noStr, orderId, tanggal, jumlah, status, aksiNum: status==='Proses' ? jumlah : null });
-    nextId++;
-    showToast(`Order "${orderId}" berhasil ditambahkan`, 'success');
-    addActivity('gray', `Order baru: ${orderId}`, `${jumlah} pcs`);
-    addNotif('gray', `Order baru dari <strong>${orderId}</strong> ditambahkan.`);
-  }
-  filteredData = [...allData];
-  renderTable();
-  renderActivity();
-  closeModal();
-}
-
-// DETAIL
+// =========================================================
+// 5. DETAIL DAN DELETE
+// =========================================================
 function openDetail(id) {
   const item = allData.find(r=>r.id===id);
   document.getElementById('detailTitle').textContent = item.orderId;
@@ -187,26 +271,40 @@ function openDetail(id) {
   showModal('detailModal');
 }
 
-// DELETE
 function openDelete(id) {
   const item = allData.find(r=>r.id===id);
   deletingId = id;
   document.getElementById('deleteItemName').textContent = item.orderId;
   showModal('deleteModal');
 }
-function confirmDelete() {
+
+async function confirmDelete() {
   const item = allData.find(r=>r.id===deletingId);
-  allData = allData.filter(r=>r.id!==deletingId);
-  filteredData = filteredData.filter(r=>r.id!==deletingId);
-  if (currentPage > Math.ceil(filteredData.length/PER_PAGE) && currentPage>1) currentPage--;
-  renderTable();
-  showToast(`Order "${item.orderId}" dihapus`, 'error');
-  addActivity('red', `Order dihapus: ${item.orderId}`, '-');
-  renderActivity();
-  closeModal();
+  
+  try {
+      const response = await fetch('../Controllers/OrderController.php?action=delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: deletingId })
+      });
+      const resData = await response.json();
+
+      if (resData.status === 'success') {
+          showToast(`Order "${item.orderId}" berhasil dihapus`, 'success');
+          closeModal();
+          await fetchOrders(); 
+          await fetchActivities();
+      } else {
+          showToast(resData.message, 'error');
+      }
+  } catch (error) {
+      showToast('Terjadi kesalahan saat menghapus pesanan', 'error');
+  }
 }
 
-// KONFIRMASI SELESAI
+// =========================================================
+// 6. KONFIRMASI SELESAI
+// =========================================================
 function openKonfirmasi(id) {
   const item = allData.find(r=>r.id===id);
   konfirmasiId = id;
@@ -220,41 +318,59 @@ function changeKonfirmasiQty(delta) {
   const inp = document.getElementById('konfirmasiQty');
   inp.value = Math.max(0, parseInt(inp.value||0)+delta);
 }
-function confirmSelesai() {
+
+async function confirmSelesai() {
   const item = allData.find(r=>r.id===konfirmasiId);
   const hasil = parseInt(document.getElementById('konfirmasiQty').value)||0;
-  const idx = allData.findIndex(r=>r.id===konfirmasiId);
-  allData[idx].status = 'Selesai';
-  allData[idx].aksiNum = null;
-  filteredData = [...allData];
-  renderTable();
-  addActivity('green', `Order selesai: ${item.orderId} — ${hasil} pcs`, 'Selesai');
-  addNotif('green', `Order <strong>${item.orderId}</strong> selesai. ${hasil} pcs.`);
-  renderActivity();
-  renderNotifBadge();
-  showToast(`Order "${item.orderId}" selesai! (${hasil} pcs)`, 'success');
-  closeModal();
+
+  try {
+      const response = await fetch('../Controllers/OrderController.php?action=selesai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: konfirmasiId })
+      });
+      const resData = await response.json();
+
+      if (resData.status === 'success') {
+          showToast(`Order "${item.orderId}" selesai! (${hasil} pcs)`, 'success');
+          closeModal();
+          await fetchOrders(); 
+          await fetchActivities();
+      } else {
+          showToast(resData.message, 'error');
+      }
+  } catch (error) {
+      showToast('Terjadi kesalahan saat mengupdate status', 'error');
+  }
 }
 
-// LOGOUT
-function openLogout() { showModal('logoutModal'); }
-
-// ACTIVITY PANEL
-function addActivity(type, title, sub) {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  activities.unshift({ time:`${h}:${m}`, date:'21 April 2026', title, sub, type });
+// =========================================================
+// 7. ACTIVITY PANEL
+// =========================================================
+async function fetchActivities() {
+    try {
+        const response = await fetch('../Controllers/OrderController.php?action=get_activities');
+        activities = await response.json();
+        renderActivity();
+    } catch (error) {
+        console.error("Gagal memuat aktivitas:", error);
+    }
 }
 
 function renderActivity() {
   const body = document.getElementById('activityBody');
-  const recent = activities.slice(0,8);
+  
+  if (activities.length === 0) {
+      body.innerHTML = '<div style="padding: 30px 20px; text-align: center; color: #999; font-size: 13px;">Belum ada riwayat transaksi.</div>';
+      return;
+  }
+
   const grouped = {};
-  recent.forEach(a => {
+  activities.forEach(a => {
     if (!grouped[a.date]) grouped[a.date] = [];
     grouped[a.date].push(a);
   });
+  
   let html = '';
   Object.entries(grouped).forEach(([date, items]) => {
     html += `<div class="activity-date">${date}</div>`;
@@ -262,7 +378,7 @@ function renderActivity() {
       html += `<div class="activity-item">
         <span class="act-time">${a.time}</span>
         <div class="act-content">
-          <div class="act-title">${a.title}</div>
+          <div class="act-title">${a.title} <span class="act-badge ${a.type}">${a.type==='green'?'Selesai':'Proses'}</span></div>
           ${a.sub?`<div class="act-sub">${a.sub}</div>`:''}
         </div>
         <span class="act-arrow">›</span>
@@ -272,63 +388,14 @@ function renderActivity() {
   body.innerHTML = html;
 }
 
-// ALL ACTIVITY
 function openAllActivity() {
-  const grouped = {};
-  activities.forEach(a => {
-    if (!grouped[a.date]) grouped[a.date] = [];
-    grouped[a.date].push(a);
-  });
-  let html = '';
-  Object.entries(grouped).forEach(([date, items]) => {
-    html += `<div class="activity-date">${date}</div>`;
-    items.forEach(a => {
-      html += `<div class="activity-item">
-        <span class="act-time">${a.time}</span>
-        <div class="act-content">
-          <div class="act-title">${a.title} <span class="act-badge ${a.type}">${a.type==='green'?'Selesai':a.type==='orange'?'Proses':a.type==='red'?'Hapus':'Info'}</span></div>
-          ${a.sub?`<div class="act-sub">${a.sub}</div>`:''}
-        </div>
-        <span class="act-arrow">›</span>
-      </div>`;
-    });
-  });
-  document.getElementById('allActivityBody').innerHTML = html;
-  showModal('allActivityModal');
+    document.getElementById('allActivityBody').innerHTML = document.getElementById('activityBody').innerHTML;
+    showModal('allActivityModal');
 }
 
-// NOTIFIKASI
-function renderNotifList() {
-  const list = document.getElementById('notifList');
-  list.innerHTML = notifications.map(n => `
-    <div class="notif-item${n.read?'':' unread'}" onclick="readNotif(${n.id})">
-      <div class="notif-dot ${n.type}"></div>
-      <div>
-        <div class="notif-text">${n.text}</div>
-        <div class="notif-time">${n.time}</div>
-      </div>
-    </div>
-  `).join('');
-}
-function renderNotifBadge() {
-  const u = notifications.filter(n=>!n.read).length;
-  document.getElementById('bellBadge').style.display = u>0?'block':'none';
-}
-function addNotif(type, text) {
-  notifications.unshift({ id:Date.now(), type, text, time:'Baru saja', read:false });
-  renderNotifList(); renderNotifBadge();
-}
-function readNotif(id) { const n=notifications.find(x=>x.id===id); if(n) n.read=true; renderNotifList(); renderNotifBadge(); }
-function markAllRead() { notifications.forEach(n=>n.read=true); renderNotifList(); renderNotifBadge(); showToast('Semua notifikasi ditandai dibaca','info'); }
-function toggleNotif() {
-  const panel=document.getElementById('notifPanel'), overlay=document.getElementById('notifOverlay');
-  const open=panel.classList.contains('open');
-  panel.classList.toggle('open',!open); overlay.classList.toggle('active',!open);
-  if(!open) renderNotifList();
-}
-function closeNotif() { document.getElementById('notifPanel').classList.remove('open'); document.getElementById('notifOverlay').classList.remove('active'); }
-
-// TOAST
+// =========================================================
+// TOAST NOTIFICATION
+// =========================================================
 function showToast(msg, type='info') {
   const icons = {
     success:'<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
@@ -342,7 +409,13 @@ function showToast(msg, type='info') {
   setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(20px)'; el.style.transition='all 0.3s'; setTimeout(()=>el.remove(),300); },3000);
 }
 
+// =========================================================
 // INIT
-renderTable();
-renderActivity();
-renderNotifBadge();
+// =========================================================
+async function initPage() {
+    await fetchOrders();
+    await fetchActivities();
+    await fetchProductsForManual();
+}
+
+initPage();

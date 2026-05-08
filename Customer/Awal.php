@@ -36,6 +36,13 @@
                     <span>Take Away</span>
                 </button>
             </div>
+
+            <div style="margin-top: 5px; text-align: left; padding-left: 5px; margin-bottom: 0px;">
+                <a href="../Index.php" style="text-decoration: none; font-size: 13px; font-weight: 600; color: #8a7060; opacity: 0.8; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                    Keluar
+                </a>
+            </div>
+
         </div>
 
     </div>

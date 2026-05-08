@@ -41,9 +41,9 @@
                 <span class="summary-total" id="total-val">Rp 0</span>
             </div>
 
-            <div class="action-buttons">
+           <div class="action-buttons">
                 <button class="btn btn-back" onclick="window.location.href='Menu.php'">Back</button>
-             <button class="btn btn-complete" onclick="pindahHalaman('pembayaran.php')">Complete Order</button>
+                <button class="btn btn-complete" onclick="window.location.href='pembayaran.php'">Lanjut Validasi</button>
             </div>
         </div>
 

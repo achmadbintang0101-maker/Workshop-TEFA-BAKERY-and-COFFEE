@@ -111,3 +111,152 @@ function renderCart() {
     if (elTotal) elTotal.innerText = total.toLocaleString('id-ID');
     if (elCartData) elCartData.value = JSON.stringify(cart);
 }
+
+// ==============================================================
+// LOGIKA API JSON (FETCH) UNTUK NOTIFIKASI & KONFIRMASI KASIR
+// ==============================================================
+
+// 1. Fetch Notifikasi secara berkala (Polling setiap 5 detik)
+async function loadNotifikasi() {
+    try {
+        const response = await fetch('../Controllers/ApiKasir.php?action=get_notif');
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            const listContainer = document.getElementById('notif-list');
+            const badge = document.getElementById('notif-badge');
+            
+            listContainer.innerHTML = ''; // Kosongkan list
+            
+            if (result.data.length > 0) {
+                badge.style.display = 'block'; // Tampilkan titik merah
+                result.data.forEach(order => {
+                    listContainer.innerHTML += `
+                        <div class="notif-item" onclick="openDetailModal(${order.id})">
+                            <div style="font-weight: 600; color: #111; font-size: 0.95rem;">
+                                <span class="red-dot"></span> Pesanan masuk <span style="font-weight: 400;">menunggu konfirmasi pesanan</span>
+                            </div>
+                            <div style="color: #888; font-size: 0.8rem; margin-left: 18px; margin-top: 5px;">${order.waktu_text}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                badge.style.display = 'none'; // Sembunyikan titik merah
+                listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">Tidak ada pesanan tertunda.</div>';
+            }
+        }
+    } catch (e) { 
+        console.error("Gagal memuat notifikasi", e); 
+    }
+}
+
+// Jalankan loadNotifikasi saat file JS dimuat, dan ulangi setiap 5 detik
+loadNotifikasi();
+setInterval(loadNotifikasi, 5000); 
+
+// Fungsi Toggle Dropdown Lonceng
+function toggleNotif() {
+    const dropdown = document.getElementById('notif-dropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// 2. Fetch Detail Pesanan Saat Notif Diklik
+async function openDetailModal(id_transaction) {
+    document.getElementById('notif-dropdown').style.display = 'none'; // Tutup dropdown
+    
+    try {
+        const response = await fetch(`../Controllers/ApiKasir.php?action=get_detail&id=${id_transaction}`);
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            const data = result.data;
+            
+            // Format Waktu & Tanggal
+            const dateObj = new Date(data.created_at);
+            document.getElementById('modal-date').innerText = dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('modal-time').innerText = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            // LOGIKA CERDAS: Cek apakah punya nama atau Walk-in
+            let namaPemesan = "Pelanggan Walk-in (Kasir)";
+            if (data.nama_customer) {
+                // Huruf kapital di awal untuk role (contoh: Mahasiswa)
+                let roleKapital = data.role_customer.charAt(0).toUpperCase() + data.role_customer.slice(1);
+                namaPemesan = `${data.nama_customer} (${roleKapital})`;
+            }
+
+            // Isi Data Teks HTML
+            document.getElementById('modal-order-id').innerText = '#' + (data.queue_number || `TRX-${data.id_transaction}`);
+            document.getElementById('modal-cust-name').innerText = namaPemesan;
+            document.getElementById('modal-queue').innerText = data.queue_number || '-';
+            document.getElementById('modal-total').innerText = 'Rp ' + Number(data.grand_total).toLocaleString('id-ID');
+            
+            // Ambil data 'jenis_pesanan' (Dine In/Take Away)
+            document.getElementById('modal-order-type').innerText = data.jenis_pesanan ? data.jenis_pesanan : 'Belum Ditentukan';
+
+            // Looping List Barang Belanjaan
+            let itemsHTML = '';
+            data.items.forEach(item => {
+                itemsHTML += `
+                <div style="background: #CBA57A; border-radius: 8px; padding: 15px; margin-bottom: 10px; color: #111;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div>
+                                <div>${item.product_name}</div>
+                                <div style="font-size: 0.8rem; color: #4A2C1D;">Qty : ${item.qty}</div>
+                            </div>
+                        </div>
+                        <div>Rp ${Number(item.subtotal).toLocaleString('id-ID')}</div>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('modal-items-container').innerHTML = itemsHTML;
+            
+            // Simpan ID Transaksi di input hidden untuk konfirmasi
+            document.getElementById('active-trans-id').value = data.id_transaction;
+            
+            // Tampilkan Modal
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+    } catch (e) {
+        alert("Gagal mengambil detail pesanan!");
+        console.error(e);
+    }
+}
+
+// Tutup Modal Detail
+function closeDetailModal() { 
+    document.getElementById('detail-modal').style.display = 'none'; 
+}
+
+// 3. Eksekusi Konfirmasi Pesanan (Update Status & Potong Stok)
+async function konfirmasiPesanan() {
+    const id_trans = document.getElementById('active-trans-id').value;
+    const btn = document.getElementById('btn-konfirmasi');
+    
+    // Ganti teks tombol saat loading
+    btn.innerText = "Memproses..."; 
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('../Controllers/ApiKasir.php?action=confirm_order', {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_transaction: id_trans })
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert("Pesanan berhasil dikonfirmasi!");
+            closeDetailModal();
+            loadNotifikasi(); // Refresh daftar notifikasi tanpa reload
+            window.location.reload(); // Refresh halaman agar stok produk berkurang di layar
+        } else {
+            alert("Gagal konfirmasi: " + result.message);
+        }
+    } catch (e) {
+        alert("Terjadi kesalahan sistem!");
+    } finally {
+        btn.innerText = "Konfirmasi"; 
+        btn.disabled = false;
+    }
+}

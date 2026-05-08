@@ -1,158 +1,118 @@
-// =============================================
-// DATA SEMUA PRODUK (ganti dari 3 file HTML)
-// =============================================
-const allProducts = [
-    // --- COFFEE ---
-    { category: 'coffee', img: '../Assets/IMG/Capucino.png',      name: 'Cappuchino',   price: 8000,  stars: 5, stock: 5  },
-    { category: 'coffee', img: '../Assets/IMG/sodakopi.png',      name: 'Soda Coffee',  price: 10000, stars: 5, stock: 0  },
-    { category: 'coffee', img: '../Assets/IMG/Americano.png',     name: 'Americano',    price: 10000, stars: 5, stock: 4  },
-    { category: 'coffee', img: '../Assets/IMG/mocacino.jpeg',     name: 'Mochaccino',   price: 12000, stars: 4, stock: 10 },
-    { category: 'coffee', img: '../Assets/IMG/vanilalatte.jpeg',  name: 'Vanilla Latte',price: 15000, stars: 5, stock: 2  },
+// Deklarasikan menuData sebagai array kosong
+let menuData = []; 
 
-    // --- BAKERY ---
-    { category: 'bakery', img: '../Assets/IMG/Roti Kasur.jpg',   name: 'Roti Kasur',  price: 18000, stars: 5, stock: 12 },
-    { category: 'bakery', img: '../Assets/IMG/Roti coklat.jpeg', name: 'Roti Coklat', price: 15000, stars: 5, stock: 0  },
-    { category: 'bakery', img: '../Assets/IMG/Roti kering.jpeg', name: 'Roti Kering', price: 20000, stars: 5, stock: 8  },
-    { category: 'bakery', img: '../Assets/IMG/Roti sisir.jpeg',  name: 'Roti Sisir',  price: 25000, stars: 4, stock: 5  },
-    { category: 'bakery', img: '../Assets/IMG/Roti abon.jpeg',   name: 'Roti Abon',   price: 22000, stars: 5, stock: 10 },
+// Fungsi untuk format rupiah
+function formatRupiah(angka) {
+    return 'Rp ' + angka.toLocaleString('id-ID');
+}
 
-    // --- SNACKS ---
-    { category: 'snacks', img: '../Assets/IMG/Kentang (1).png', name: 'French Fries', price: 12000, stars: 5, stock: 15 },
-    { category: 'snacks', img: '../Assets/IMG/Onion ring.png',  name: 'Onion Ring',   price: 10000, stars: 5, stock: 0  },
-    { category: 'snacks', img: '../Assets/IMG/Cookies.png',     name: 'Cookies',      price: 15000, stars: 5, stock: 8  },
-    { category: 'snacks', img: '../Assets/IMG/Brownies.png',    name: 'Brownies',     price: 12000, stars: 4, stock: 10 },
-    { category: 'snacks', img: '../Assets/IMG/Chees cake.png',  name: 'Chees Cake',   price: 10000, stars: 5, stock: 20 },
-];
+// Fungsi untuk mengambil data produk dari database via Controller
+async function fetchProducts() {
+    try {
+        // PERHATIKAN: URL ini sudah mengarah ke Controller OOP kita
+        const response = await fetch('../Controllers/ProductController.php?action=api_get_products');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Masukkan data dari database ke variabel menuData
+        menuData = data;
+        
+        // Panggil fungsi filter kategori (default ke 'coffee' saat pertama kali dimuat)
+        const defaultBtn = document.querySelector('.cat-btn.active');
+        if (defaultBtn) {
+            filterCategory('coffee', defaultBtn);
+        }
+    } catch (error) {
+        console.error("Gagal mengambil data produk:", error);
+    }
+}
 
-// RENDER PRODUK KE LAYAR (tanpa request server)
-function renderProducts(products) {
+// Panggil fungsi fetch saat halaman selesai dimuat
+document.addEventListener('DOMContentLoaded', () => {
+    fetchProducts();
+});
+
+// Fungsi untuk filter berdasarkan kategori
+function filterCategory(category, btnElement) {
+    // Ubah class active/inactive pada tombol
+    const tabs = document.querySelectorAll('.cat-btn');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+        tab.classList.add('inactive');
+    });
+    
+    if (btnElement) {
+        btnElement.classList.remove('inactive');
+        btnElement.classList.add('active');
+    }
+
+    // Filter data berdasarkan kategori
+    const filteredData = menuData.filter(item => item.category === category);
+    renderMenu(filteredData);
+}
+
+// Fungsi untuk merender HTML produk ke layar
+function renderMenu(data) {
     const menuList = document.getElementById('menu-list');
+    menuList.innerHTML = ''; // Kosongkan list sebelumnya
 
-    // Animasi hilang dulu sebelum ganti isi
-    menuList.style.opacity = '0';
-    menuList.style.transform = 'translateY(10px)';
+    if (data.length === 0) {
+        menuList.innerHTML = '<p style="text-align:center; width:100%; color: #A58F81; margin-top: 20px;">Menu kategori ini sedang kosong.</p>';
+        return;
+    }
 
-    setTimeout(() => {
-        menuList.innerHTML = products.map(p => {
-            const starsHtml = '★'.repeat(p.stars) + '☆'.repeat(5 - p.stars);
-            const stockHtml = p.stock === 0
-                ? `<span class="stok-habis">Habis</span>`
-                : `<span>Sisa: ${p.stock}</span>`;
-
-            return `
-            <div class="menu-item"
-                data-name="${p.name}"
-                data-price="${p.price}"
-                data-img="${p.img}"
-                data-stock="${p.stock}">
-                <img src="${p.img}" alt="${p.name}" class="menu-img">
-                <div class="menu-details">
-                    <div class="menu-name">${p.name}</div>
-                    <div class="menu-price">Rp ${p.price.toLocaleString('id-ID')}</div>
-                    <div class="menu-meta">
-                        <span class="stars">${starsHtml}</span>
-                        ${stockHtml}
-                    </div>
+    // Looping data dan buat elemen HTML untuk setiap produk
+    data.forEach(item => {
+        const cardHTML = `
+            <div class="menu-card" style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <img src="${item.img}" alt="${item.name}" class="menu-img" style="width: 70px; height: 70px; border-radius: 10px; object-fit: cover; margin-right: 15px;">
+                <div class="menu-info" style="flex: 1;">
+                    <div class="menu-title" style="font-weight: 700; color: #6D3D22; font-size: 1.1rem;">${item.name}</div>
+                    <div class="menu-price" style="color: #A58F81; font-weight: 600; margin-bottom: 5px;">${formatRupiah(item.price)}</div>
+                    <div style="font-size: 0.8rem; color: #777; margin-bottom: 8px;">Sisa stok: ${item.stock}</div>
                 </div>
-                <button class="add-btn" ${p.stock === 0 ? 'disabled' : ''}>+ Add</button>
-            </div>`;
-        }).join('');
-
-        // Pasang event listener ke tombol Add yang baru di-render
-        attachAddButtons();
-
-        // Animasi muncul kembali
-        menuList.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-        menuList.style.opacity = '1';
-        menuList.style.transform = 'translateY(0)';
-    }, 150);
-}
-
-// =============================================
-// FILTER KATEGORI (instant, tanpa pindah halaman)
-// =============================================
-function filterCategory(category, btnEl) {
-    // Update tombol aktif
-    document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.classList.remove('active');
-        btn.classList.add('inactive');
-    });
-    btnEl.classList.add('active');
-    btnEl.classList.remove('inactive');
-
-    // Update judul header
-    const titles = { coffee: 'Coffee', bakery: 'Bakery', snacks: 'Snacks' };
-    document.getElementById('header-title').innerText = titles[category];
-
-    // Filter & render produk
-    const filtered = allProducts.filter(p => p.category === category);
-    renderProducts(filtered);
-}
-
-// =============================================
-// TOMBOL ADD — KERANJANG & BOTTOM BAR
-// =============================================
-function attachAddButtons() {
-    document.querySelectorAll('.add-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            if (this.disabled) {
-                alert('Maaf, stok item ini sedang habis!');
-                return;
-            }
-
-            const item   = this.closest('.menu-item');
-            const name   = item.dataset.name;
-            const price  = parseInt(item.dataset.price);
-            const img    = item.dataset.img;
-            const stock  = parseInt(item.dataset.stock);
-
-            // Update Bottom Bar
-            document.getElementById('bottom-img').src   = img;
-            document.getElementById('bottom-name').innerText  = name;
-            document.getElementById('bottom-price').innerText = 'Rp ' + price.toLocaleString('id-ID');
-
-            // Simpan ke keranjang (localStorage)
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            let existing = cart.find(c => c.name === name);
-
-            if (existing) {
-                if (existing.qty < existing.stock) {
-                    existing.qty += 1;
-                } else {
-                    alert('Stok maksimal tercapai!');
-                    return;
-                }
-            } else {
-                cart.push({ name, price, qty: 1, stock, img });
-            }
-
-            localStorage.setItem('cart', JSON.stringify(cart));
-
-            // Animasi tombol
-            const orig = this.innerText;
-            this.innerText = 'Added ✓';
-            this.style.backgroundColor = '#4CAF50';
-            setTimeout(() => {
-                this.innerText = orig;
-                this.style.backgroundColor = '';
-            }, 1000);
-        });
+                <button class="add-btn" onclick="addToCart(${item.id}, '${item.name}', ${item.price}, '${item.img}', '${item.category}', ${item.stock})" style="background: #6D3D22; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 600; cursor: pointer;">Tambah</button>
+            </div>
+        `;
+        menuList.innerHTML += cardHTML;
     });
 }
 
-// =============================================
-// TRANSISI HALAMAN (tetap dipakai untuk Back & View Order)
-// =============================================
+// Fungsi untuk memasukkan pesanan ke Local Storage (Keranjang)
+function addToCart(id, name, price, img, category, stock) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let existingItem = cart.find(item => item.id === id);
+
+    if (existingItem) {
+        // Cek jika jumlah yang ditambahkan melebihi stok di database
+        if (existingItem.qty < stock) {
+            existingItem.qty += 1;
+            alert(name + ' ditambahkan ke pesanan!');
+        } else {
+            alert('Maaf, stok ' + name + ' tidak mencukupi!');
+        }
+    } else {
+        // Jika belum ada di keranjang, masukkan item baru
+        cart.push({ id, name, price, img, category, stock, qty: 1 });
+        alert(name + ' ditambahkan ke pesanan!');
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Fungsi untuk transisi antar halaman Customer
 function pindahHalaman(url) {
     const container = document.getElementById('main-container');
-    container.classList.add('fade-out');
-    setTimeout(() => { window.location.href = url; }, 300);
+    if (container) {
+        container.classList.add('fade-out');
+        setTimeout(() => {
+            window.location.href = url;
+        }, 300);
+    } else {
+        window.location.href = url;
+    }
 }
-
-// =============================================
-// INISIALISASI — tampilkan Coffee saat pertama buka
-// =============================================
-document.addEventListener('DOMContentLoaded', function () {
-    const coffeeBtn = document.querySelector('.cat-btn');
-    filterCategory('coffee', coffeeBtn);
-});

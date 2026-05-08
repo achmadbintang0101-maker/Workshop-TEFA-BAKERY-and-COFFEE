@@ -42,9 +42,15 @@ function renderCart() {
         subtotalAll += (item.price * item.qty);
     });
 
-    // 2. Filter item yang hanya cocok dengan tab yang diklik
-    // (Jika item.category kosong/dari data lama, otomatis masuk ke Coffee)
-    const filteredCart = cartData.filter(item => item.category === activeCategory || (!item.category && activeCategory === 'Coffee'));
+    // 2. PERBAIKAN: Filter item dengan menyamakan huruf kecil (case-insensitive)
+    const filteredCart = cartData.filter(item => {
+        // Ambil kategori dari item, ubah ke huruf kecil (fallback ke 'coffee' jika kosong)
+        const itemCat = (item.category || 'coffee').toLowerCase();
+        // Ubah activeCategory ('Coffee', 'Bakery', dsb) ke huruf kecil untuk dicocokkan
+        const activeCat = activeCategory.toLowerCase();
+        
+        return itemCat === activeCat;
+    });
 
     // Tampilan jika kategori tersebut kosong
     if (filteredCart.length === 0) {

@@ -252,3 +252,68 @@ body {
 .pay-btn:hover {
   background: #a67c52;
 }
+
+/* =======================================================
+   STYLING NOTIFIKASI KASIR (SIDEBAR KANAN)
+   ======================================================= */
+.notif-dropdown {
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    right: 0; 
+    width: 400px; 
+    height: 100vh; 
+    background: #EAE0D5; 
+    border-left: 2px solid #111; 
+    z-index: 99999; 
+    box-shadow: -8px 0 25px rgba(0,0,0,0.4); 
+    font-family: 'Inter', sans-serif;
+}
+.notif-header { 
+    padding: 20px; 
+    border-bottom: 2px solid #111; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    background: #DBCDBE; 
+}
+.notif-item { 
+    padding: 15px 20px; 
+    border-bottom: 1px solid #111; 
+    cursor: pointer; 
+    transition: background 0.2s; 
+}
+.notif-item:hover { 
+    background: #DBCDBE; 
+}
+.red-dot { 
+    display: inline-block; 
+    width: 10px; 
+    height: 10px; 
+    background: red; 
+    border-radius: 50%; 
+    margin-right: 8px; 
+}
+
+/* =======================================================
+   STYLING MODAL DETAIL PESANAN
+   ======================================================= */
+.modal-body-detail { 
+    padding: 20px; 
+}
+.section-title-modal { 
+    font-size: 0.8rem; 
+    font-weight: 700; 
+    color: #6D3D22; 
+    margin-bottom: 15px; 
+    border-bottom: 1px solid #D3C5BD; 
+    padding-bottom: 5px; 
+    text-transform: uppercase; 
+}
+.info-row { 
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 10px; 
+    border-bottom: 1px solid #E0D5CE; 
+    padding-bottom: 8px; 
+}
