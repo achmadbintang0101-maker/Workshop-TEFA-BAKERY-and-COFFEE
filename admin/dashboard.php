@@ -42,7 +42,7 @@ include '../Config/auth.php';
           </svg>
         </div>
         <div class="stat-info">
-          <div class="stat-label">Total Pendapatan</div>
+          <div class="stat-label">Total Pendapatan <span id="bulanPendapatan">Bulan Ini</span></div>
           <div class="stat-value" id="valPendapatan" style="font-size: 24px;">Rp 0</div>
           <div class="stat-unit">Rupiah</div>
         </div>

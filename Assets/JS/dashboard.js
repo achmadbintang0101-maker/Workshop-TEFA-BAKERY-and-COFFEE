@@ -75,6 +75,24 @@ function updateTanggalPesanan() {
 // Jalankan fungsi saat file dimuat
 updateTanggalPesanan();
 
+// ── SET BULAN REAL-TIME UNTUK PENDAPATAN ──
+function updateBulanPendapatan() {
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const now = new Date();
+    
+    // Format: Bulan Mei 2026
+    const bulanText = `Bulan ${bulan[now.getMonth()]} ${now.getFullYear()}`;
+    
+    // Masukkan ke dalam HTML
+    const elBulan = document.getElementById('bulanPendapatan');
+    if (elBulan) {
+        elBulan.innerText = bulanText;
+    }
+}
+
+// Jalankan fungsi saat file dimuat
+updateBulanPendapatan();
+
 // ── TOAST ──
 function showToast(msg, type='info') {
   const icons = {
