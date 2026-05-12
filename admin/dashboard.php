@@ -58,7 +58,7 @@ include '../Config/auth.php';
           </svg>
         </div>
         <div class="stat-info">
-          <div class="stat-label">Total Pesanan <span>Hari Ini</span></div>
+          <div class="stat-label">Total Pesanan <span id="tanggalPesanan">Hari Ini</span></div>
           <div class="stat-value" id="valPesanan">0</div>
           <div class="stat-unit">Transaksi</div>
         </div>

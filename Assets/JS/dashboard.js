@@ -57,6 +57,23 @@ async function fetchDashboard() {
         showToast("Terjadi kesalahan jaringan", "error");
     }
 }
+// ── SET TANGGAL REAL-TIME ──
+function updateTanggalPesanan() {
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const now = new Date();
+    
+    // Format: 12 Mei 2026
+    const tanggalText = `${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
+    
+    // Masukkan ke dalam HTML
+    const elTanggal = document.getElementById('tanggalPesanan');
+    if (elTanggal) {
+        elTanggal.innerText = tanggalText;
+    }
+}
+
+// Jalankan fungsi saat file dimuat
+updateTanggalPesanan();
 
 // ── TOAST ──
 function showToast(msg, type='info') {

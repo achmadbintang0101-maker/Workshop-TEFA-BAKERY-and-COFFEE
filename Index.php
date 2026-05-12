@@ -73,10 +73,10 @@ include 'include/header.php';
 
     <div class="about-image">
       <div class="box-grid">
-        <div class="grid-item"><img src="Assets/IMG/Jurusan.png" alt="TEFA Bakery 1" onerror="this.src='https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&q=80'"></div>
-        <div class="grid-item"><img src="Assets/IMG/Jurusan.png" alt="TEFA Bakery 2" onerror="this.src='https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=400&q=80'"></div>
-        <div class="grid-item"><img src="Assets/IMG/Jurusan.png" alt="TEFA Bakery 3" onerror="this.src='https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=80'"></div>
-        <div class="grid-item"><img src="Assets/IMG/Jurusan.png" alt="TEFA Bakery 4" onerror="this.src='https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&q=80'"></div>
+        <div class="grid-item"><img src="Assets/IMG/Gambar bagian Index1.jpeg" alt="TEFA Bakery 1" onerror="this.src='https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&q=80'"></div>
+        <div class="grid-item"><img src="Assets/IMG/Gambar bagian Index2.jpeg" alt="TEFA Bakery 2" onerror="this.src='https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=400&q=80'"></div>
+        <div class="grid-item"><img src="Assets/IMG/Gambar bagian Index3.jpeg" alt="TEFA Bakery 3" onerror="this.src='https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=80'"></div>
+        <div class="grid-item"><img src="Assets/IMG/Gambar bagian Index4.jpeg" alt="TEFA Bakery 4" onerror="this.src='https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&q=80'"></div>
       </div>
     </div>
   </div>
