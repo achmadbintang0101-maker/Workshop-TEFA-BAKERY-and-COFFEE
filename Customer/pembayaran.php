@@ -32,8 +32,7 @@
         <div class="detail-box">
             <strong style="color:#6D3D22;">Pesanan Anda:</strong>
             <div id="order-list" class="item-list">
-                <!-- Diisi oleh JS -->
-            </div>
+                </div>
             <div style="display: flex; justify-content: space-between; font-weight: bold; color: #6D3D22;">
                 <span>Total Bayar:</span>
                 <span id="grand-total-text">Rp 0</span>
@@ -42,7 +41,15 @@
 
         <div class="form-group">
             <label>Nama Pemesan</label>
-            <input type="text" id="cust-name" placeholder="Masukkan nama Anda...">
+            <input 
+                type="text" 
+                id="cust-name" 
+                placeholder="Masukkan nama Anda..."
+                maxlength="40"
+                oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                autocomplete="off"
+                required
+            >
         </div>
 
         <div class="form-group">
@@ -89,12 +96,19 @@
 
         // 2. Fungsi Submit ke Database
         async function submitOrder() {
-            const custName = document.getElementById('cust-name').value;
+            // Gunakan trim() untuk menghapus spasi kosong di awal/akhir
+            const custName = document.getElementById('cust-name').value.trim();
             const custRole = document.getElementById('cust-role').value;
             const cartData = JSON.parse(localStorage.getItem('cart')) || [];
 
             if (!custName || !custRole) {
                 alert("Harap isi Nama dan Identitas terlebih dahulu!"); return;
+            }
+
+            // PERBAIKAN: Validasi ekstra di JS sebelum dikirim ke server
+            if (!/^[a-zA-Z\s]+$/.test(custName)) {
+                alert("Nama hanya boleh berisi huruf dan spasi!"); 
+                return;
             }
 
             let subtotal = 0;
@@ -124,11 +138,12 @@
                     // Berhasil! Bawa nomor antrean ke halaman sukses
                     window.location.href = `sukses.php?antrean=${result.queue_number}`;
                 } else {
-                    alert("Gagal memproses pesanan!");
+                    alert("Gagal memproses pesanan: " + (result.message || "Kesalahan Server"));
                     btnSubmit.innerText = "Complete Order"; btnSubmit.disabled = false;
                 }
             } catch (error) {
                 console.error(error); alert("Terjadi kesalahan sistem!");
+                btnSubmit.innerText = "Complete Order"; btnSubmit.disabled = false;
             }
         }
     </script>

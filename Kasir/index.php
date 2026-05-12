@@ -145,8 +145,11 @@ $produk_kasir = $productObj->getAvailableProducts();
             <!-- Simpan ID Transaksi Tersembunyi untuk Konfirmasi -->
             <input type="hidden" id="active-trans-id">
 
-            <div style="display: flex; gap: 10px;">
+           <div style="display: flex; gap: 10px;">
                 <button onclick="closeDetailModal()" style="flex: 1; padding: 14px; background: #CBA57A; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Kembali</button>
+                
+                <button onclick="batalkanPesanan()" style="flex: 1; padding: 14px; background: #e53935; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;" id="btn-batal">Batalkan</button>
+                
                 <button onclick="konfirmasiPesanan()" style="flex: 1; padding: 14px; background: #3A2318; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;" id="btn-konfirmasi">Konfirmasi</button>
             </div>
         </div>

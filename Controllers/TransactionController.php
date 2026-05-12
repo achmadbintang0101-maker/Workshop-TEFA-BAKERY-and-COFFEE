@@ -13,11 +13,19 @@ if (isset($_GET['action']) && $_GET['action'] === 'api_checkout') {
     $conn = $db->getConnection();
     $transactionObj = new Transaction($conn);
 
-    // Ambil data JSON dari JavaScript
+// Ambil data JSON dari JavaScript
     $data = json_decode(file_get_contents("php://input"), true);
 
     if (!$data) {
         echo json_encode(['status' => 'error', 'message' => 'Data pesanan tidak valid']);
+        exit;
+    }
+
+    $nama = trim($data['nama'] ?? ''); // Tambahkan trim() di sini
+    
+    // --- [MASUKKAN VALIDASI LAPIS KEDUA DI SINI] ---
+    if (!preg_match("/^[a-zA-Z\s]+$/", $nama)) {
+        echo json_encode(['status' => 'error', 'message' => 'Nama hanya boleh berisi huruf dan spasi!']);
         exit;
     }
 

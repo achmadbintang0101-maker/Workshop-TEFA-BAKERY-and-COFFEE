@@ -260,3 +260,43 @@ async function konfirmasiPesanan() {
         btn.disabled = false;
     }
 }
+
+// 4. Eksekusi Pembatalan Pesanan (Hapus dari Database)
+async function batalkanPesanan() {
+    const id_trans = document.getElementById('active-trans-id').value;
+    const btnBatal = document.getElementById('btn-batal');
+    
+    // Konfirmasi ganda (alert pop-up) untuk mencegah Kasir salah klik
+    if (!confirm("Apakah Anda yakin ingin MEMBATALKAN pesanan ini? Pesanan akan dihapus dari sistem dan tidak dapat dikembalikan.")) {
+        return;
+    }
+
+    // Ganti teks tombol saat loading
+    btnBatal.innerText = "Memproses..."; 
+    btnBatal.disabled = true;
+
+    try {
+        // Tembak API hapus milik Admin (OrderController)
+        const response = await fetch('../Controllers/OrderController.php?action=delete', {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id_trans })
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            alert("Pesanan berhasil dibatalkan!");
+            closeDetailModal(); // Tutup Pop-up detail
+            loadNotifikasi();   // Refresh otomatis data di lonceng notifikasi Kasir
+        } else {
+            alert("Gagal membatalkan: " + result.message);
+        }
+    } catch (e) {
+        alert("Terjadi kesalahan sistem saat membatalkan pesanan!");
+        console.error(e);
+    } finally {
+        // Kembalikan tombol seperti semula jika terjadi error
+        btnBatal.innerText = "Batalkan"; 
+        btnBatal.disabled = false;
+    }
+}

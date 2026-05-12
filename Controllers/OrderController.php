@@ -157,6 +157,14 @@ if ($action === 'create_manual_order') {
     $data = json_decode(file_get_contents("php://input"), true);
     
     $nama = trim($data['nama'] ?? '');
+
+    // --- [MASUKKAN VALIDASI LAPIS KEDUA DI SINI] ---
+    if (!preg_match("/^[a-zA-Z\s]+$/", $nama)) {
+        echo json_encode(['status' => 'error', 'message' => 'Nama pemesan hanya boleh berisi huruf dan spasi!']);
+        exit;
+    }
+    
+    $nama = trim($data['nama'] ?? '');
     $role = $data['role'] ?? 'umum';
     $status = $data['status'] ?? 'pending'; // 'pending' = Proses, 'selesai' = Lunas
     $items = $data['items'] ?? [];
