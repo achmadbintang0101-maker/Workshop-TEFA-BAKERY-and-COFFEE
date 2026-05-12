@@ -68,7 +68,8 @@ $produk_kasir = $productObj->getAvailableProducts();
     <?php
     if(mysqli_num_rows($produk_kasir) > 0) {
         while($row = mysqli_fetch_assoc($produk_kasir)){
-            echo '<div class="card" data-category="'.$row['category'].'" onclick="addToCart('.$row['id_product'].',\''.htmlspecialchars($row['name']).'\','.$row['price'].')">';
+            // PERHATIKAN BARIS INI: Parameter disusun rapi -> (id, nama, harga, stok)
+            echo '<div class="card" data-category="'.$row['category'].'" onclick="addToCart('.$row['id_product'].',\''.htmlspecialchars($row['name']).'\','.$row['price'].', '.$row['stok'].')">';
             echo '<img src="../Assets/IMG/'.$row['image'].'" alt="'.htmlspecialchars($row['name']).'">';
             echo '<h4>'.htmlspecialchars($row['name']).'</h4>';
             echo '<p>Rp '.number_format($row['price'], 0, ',', '.').'</p>';

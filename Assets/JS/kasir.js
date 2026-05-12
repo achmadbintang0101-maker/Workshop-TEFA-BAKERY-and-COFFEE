@@ -46,19 +46,39 @@ function filterCategory(category, element) {
 // ======= CART LOGIC =======
 let cart = [];
 
-function addToCart(id, name, price) {
+// Tambahkan parameter ke-4 yaitu 'stock'
+function addToCart(id, name, price, stock) {
+    // 1. Cek apakah stok dari database memang sudah 0
+    if (stock <= 0) {
+        alert(`Maaf, stok ${name} sedang kosong/habis!`);
+        return;
+    }
+
     let found = cart.find(item => item.id === id);
     if (found) {
-        found.qty += 1;
+        // 2. Cek apakah item di keranjang sudah menyentuh batas stok
+        if (found.qty < found.stock) {
+            found.qty += 1;
+        } else {
+            alert(`Stok tidak cukup! Sisa stok ${name} hanya ${found.stock} item.`);
+        }
     } else {
-        cart.push({ id, name, price: parseFloat(price), qty: 1 });
+        // 3. Simpan data 'stock' ke dalam keranjang untuk dicek nanti
+        cart.push({ id, name, price: parseFloat(price), qty: 1, stock: parseInt(stock) });
     }
     renderCart();
 }
 
 function increaseQty(id) {
     let item = cart.find(i => i.id === id);
-    if (item) item.qty += 1;
+    if (item) {
+        // 4. Batasi tombol (+) di keranjang agar tidak tembus limit
+        if (item.qty < item.stock) {
+            item.qty += 1;
+        } else {
+            alert(`Stok tidak cukup! Sisa stok ${item.name} hanya ${item.stock} item.`);
+        }
+    }
     renderCart();
 }
 
