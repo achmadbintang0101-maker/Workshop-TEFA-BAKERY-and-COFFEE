@@ -253,22 +253,59 @@ function openEdit(id) {
 }
 
 // =========================================================
-// 5. DETAIL DAN DELETE
+// 5. DETAIL DAN DELETE (SUDAH DIPERBARUI)
 // =========================================================
-function openDetail(id) {
-  const item = allData.find(r=>r.id===id);
+async function openDetail(id) {
+  const item = allData.find(r => r.id === id);
   document.getElementById('detailTitle').textContent = item.orderId;
-  document.getElementById('detailContent').innerHTML = `
-    <div class="detail-grid">
-      <div class="detail-item"><div class="detail-label">Tanggal</div><div class="detail-value">${fmtDate(item.tanggal)}</div></div>
-      <div class="detail-item"><div class="detail-label">Jumlah</div><div class="detail-value">${item.jumlah} pcs</div></div>
-      <div class="detail-item detail-full"><div class="detail-label">Status</div><div class="detail-value">${badgeHtml(item.status)}</div></div>
-    </div>
-  `;
-  let footer = `<button class="btn-cancel" onclick="closeModal()">Tutup</button>`;
-  if (item.status==='Proses') footer += `<button class="btn-selesai" onclick="openKonfirmasi(${item.id}); closeModal()">✓ Selesaikan</button>`;
-  document.getElementById('detailFooter').innerHTML = footer;
-  showModal('detailModal');
+  
+  // Tampilkan efek loading sementara ke Admin
+  document.getElementById('detailContent').innerHTML = '<div style="padding: 30px; text-align: center; color: #888;">Memuat rincian pesanan...</div>';
+  showModal('detailModal'); // Buka modalnya dulu
+
+  try {
+      // Minta data ke Back-End
+      const response = await fetch(`../Controllers/OrderController.php?action=get_detail&id=${id}`);
+      const resData = await response.json();
+      
+      let listBarangHtml = '';
+      
+      // Jika sukses ambil data barang, buat susunan HTML-nya
+      if (resData.status === 'success' && resData.items.length > 0) {
+          listBarangHtml = '<div style="margin-top: 20px; border-top: 1px dashed #d3c5bd; padding-top: 15px;"><div style="font-size: 11px; font-weight: 700; color: #8a7060; margin-bottom: 12px; letter-spacing: 0.5px;">RINCIAN BARANG:</div>';
+          
+          resData.items.forEach(brg => {
+              listBarangHtml += `
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13.5px;">
+                      <div>
+                          <div style="font-weight: 600; color: #3b1414;">${brg.name}</div>
+                          <div style="font-size: 12px; color: #888; margin-top: 2px;">${brg.qty} x Rp ${brg.price.toLocaleString('id-ID')}</div>
+                      </div>
+                      <div style="font-weight: 700; color: #3b1414;">Rp ${brg.subtotal.toLocaleString('id-ID')}</div>
+                  </div>
+              `;
+          });
+          listBarangHtml += '</div>';
+      }
+
+      // Gabungkan info Header (Tanggal, Jumlah) dengan Rincian Barang
+      document.getElementById('detailContent').innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-item"><div class="detail-label">Tanggal</div><div class="detail-value">${fmtDate(item.tanggal)}</div></div>
+          <div class="detail-item"><div class="detail-label">Total Qty</div><div class="detail-value">${item.jumlah} pcs</div></div>
+          <div class="detail-item detail-full"><div class="detail-label">Status</div><div class="detail-value">${badgeHtml(item.status)}</div></div>
+        </div>
+        ${listBarangHtml}
+      `;
+      
+      // Atur Tombol Footer
+      let footer = `<button class="btn-cancel" onclick="closeModal()">Tutup</button>`;
+      if (item.status === 'Proses') footer += `<button class="btn-selesai" onclick="openKonfirmasi(${item.id}); closeModal()">✓ Selesaikan</button>`;
+      document.getElementById('detailFooter').innerHTML = footer;
+      
+  } catch (error) {
+      document.getElementById('detailContent').innerHTML = '<div style="padding: 20px; text-align: center; color: #e53935; font-weight: 600;">Terjadi kesalahan sistem saat memuat barang.</div>';
+  }
 }
 
 function openDelete(id) {

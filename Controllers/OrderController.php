@@ -67,6 +67,34 @@ if ($action === 'get_all_orders') {
 }
 
 // ==========================================================
+// 1.5 API: AMBIL DETAIL BARANG UNTUK MODAL ADMIN
+// ==========================================================
+if ($action === 'get_detail') {
+    header('Content-Type: application/json');
+    $id_transaction = (int)($_GET['id'] ?? 0);
+    
+    if ($id_transaction > 0) {
+        $result = $orderObj->getOrderDetails($id_transaction);
+        $items = [];
+        
+        if ($result && mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $items[] = [
+                    'name'     => $row['name'],
+                    'qty'      => (int)$row['qty'],
+                    'price'    => (float)$row['price_at_time'],
+                    'subtotal' => (float)$row['subtotal']
+                ];
+            }
+        }
+        echo json_encode(['status' => 'success', 'items' => $items]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'ID Transaksi tidak valid']);
+    }
+    exit;
+}
+
+// ==========================================================
 // 2. API: UBAH STATUS PESANAN JADI 'SELESAI'
 // ==========================================================
 if ($action === 'selesai') {
@@ -155,14 +183,6 @@ if ($action === 'create_manual_order') {
     
     // Tangkap data JSON yang dikirim dari form modal JavaScript
     $data = json_decode(file_get_contents("php://input"), true);
-    
-    $nama = trim($data['nama'] ?? '');
-
-    // --- [MASUKKAN VALIDASI LAPIS KEDUA DI SINI] ---
-    if (!preg_match("/^[a-zA-Z\s]+$/", $nama)) {
-        echo json_encode(['status' => 'error', 'message' => 'Nama pemesan hanya boleh berisi huruf dan spasi!']);
-        exit;
-    }
     
     $nama = trim($data['nama'] ?? '');
     $role = $data['role'] ?? 'umum';
