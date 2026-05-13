@@ -6,10 +6,54 @@ function formatRupiah(angka) {
     return 'Rp ' + angka.toLocaleString('id-ID');
 }
 
+// =========================================================
+// FUNGSI BARU: Mengupdate Bar Bawah (Mini Cart) Real-Time
+// =========================================================
+function updateMiniCart(lastAddedImg = null, lastAddedName = null) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    const bottomImg = document.getElementById('bottom-img');
+    const bottomName = document.getElementById('bottom-name');
+    const bottomPrice = document.getElementById('bottom-price');
+    
+    // Jika keranjang kosong
+    if (cart.length === 0) {
+        if(bottomName) bottomName.innerText = "Belum ada pesanan";
+        if(bottomPrice) bottomPrice.innerText = "-";
+        return;
+    }
+
+    // Hitung total item dan subtotal harga murni (tanpa pajak)
+    let totalQty = 0;
+    let subtotal = 0;
+    
+    cart.forEach(item => {
+        totalQty += item.qty;
+        subtotal += (item.price * item.qty);
+    });
+
+    // Menampilkan nama barang terakhir yang dipencet beserta total item keseluruhan
+    if (lastAddedName && bottomName) {
+        bottomName.innerText = `${lastAddedName} ditambahkan (Total: ${totalQty} Item)`;
+    } else if (bottomName) {
+        // Jika halaman baru direfresh, tampilkan total standar
+        bottomName.innerText = `Total ${totalQty} Item di Keranjang`;
+    }
+    
+    // Menampilkan harga murni sebelum pajak 10%
+    if(bottomPrice) bottomPrice.innerText = formatRupiah(subtotal);
+
+    // Mengubah ikon gambar di bottom bar menjadi gambar produk terakhir
+    if (lastAddedImg && bottomImg) {
+        bottomImg.src = lastAddedImg;
+    } else if (bottomImg && cart.length > 0) {
+        bottomImg.src = cart[cart.length - 1].img;
+    }
+}
+
 // Fungsi untuk mengambil data produk dari database via Controller
 async function fetchProducts() {
     try {
-        // PERHATIKAN: URL ini sudah mengarah ke Controller OOP kita
         const response = await fetch('../Controllers/ProductController.php?action=api_get_products');
         
         if (!response.ok) {
@@ -31,9 +75,10 @@ async function fetchProducts() {
     }
 }
 
-// Panggil fungsi fetch saat halaman selesai dimuat
+// Panggil fungsi fetch dan UPDATE BAR BAWAH saat halaman selesai dimuat
 document.addEventListener('DOMContentLoaded', () => {
     fetchProducts();
+    updateMiniCart(); // <--- Agar saat pelanggan back dari Keranjang, bar bawah tetap terisi
 });
 
 // Fungsi untuk filter berdasarkan kategori
@@ -91,17 +136,20 @@ function addToCart(id, name, price, img, category, stock) {
         // Cek jika jumlah yang ditambahkan melebihi stok di database
         if (existingItem.qty < stock) {
             existingItem.qty += 1;
-            alert(name + ' ditambahkan ke pesanan!');
         } else {
+            // HANYA MUNCUL JIKA STOK HABIS
             alert('Maaf, stok ' + name + ' tidak mencukupi!');
+            return; // Hentikan eksekusi agar tidak jadi ditambah
         }
     } else {
         // Jika belum ada di keranjang, masukkan item baru
         cart.push({ id, name, price, img, category, stock, qty: 1 });
-        alert(name + ' ditambahkan ke pesanan!');
     }
 
     localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Panggil fungsi ajaib Bar Bawah
+    updateMiniCart(img, name);
 }
 
 // Fungsi untuk transisi antar halaman Customer

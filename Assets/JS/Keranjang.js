@@ -79,7 +79,18 @@ function renderCart() {
                         
                         <div class="qty-control">
                             <button class="qty-btn" onclick="updateQty(${originalIndex}, -1)">-</button>
-                            <span class="qty-number">${item.qty}</span>
+                            
+                            <input 
+                                type="text" 
+                                inputmode="numeric" 
+                                pattern="[0-9]*" 
+                                class="qty-number" 
+                                value="${item.qty}" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                onchange="handleManualInput(${originalIndex}, this.value)"
+                                style="width: 40px; margin: 0 8px; text-align: center; border: 1px solid #CBA57A; border-radius: 5px; font-weight: bold; font-size: 1rem; color: #3A2318; outline: none; background: #fff; padding: 2px 0;"
+                            >
+
                             <button class="qty-btn plus" onclick="updateQty(${originalIndex}, 1)">+</button>
                         </div>
                     </div>
@@ -114,6 +125,41 @@ function updateQty(index, change) {
     renderCart(); 
 }
 
+// ── FUNGSI BARU: Menangani ketikan angka manual dari pelanggan ──
+function handleManualInput(index, value) {
+    let cartData = getCartData();
+    let newQty = parseInt(value, 10);
+    let itemName = cartData[index].name;
+    let maxStock = cartData[index].stock;
+
+    // 1. Jika dikosongkan atau bukan angka, kembalikan ke minimal 1
+    if (isNaN(newQty) || newQty === "") {
+        cartData[index].qty = 1;
+    } 
+    // 2. Jika user mengetik angka 0, konfirmasi apakah ingin menghapus?
+    else if (newQty === 0) {
+        let confirmDelete = confirm(`Apakah Anda yakin ingin menghapus ${itemName} dari keranjang?`);
+        if (confirmDelete) {
+            cartData.splice(index, 1); // Hapus item
+        } else {
+            cartData[index].qty = 1;   // Batal hapus, kembalikan ke 1
+        }
+    } 
+    // 3. Jika user mengetik angka melebihi stok yang ada
+    else if (newQty > maxStock) {
+        alert(`Stok tidak cukup! Sisa stok untuk ${itemName} hanya ${maxStock} item.`);
+        cartData[index].qty = maxStock; // Paksa angka berubah jadi batas maksimal stok
+    } 
+    // 4. Jika angka normal dan aman
+    else {
+        cartData[index].qty = newQty;
+    }
+
+    // Simpan ke LocalStorage dan gambar ulang layarnya
+    saveCartData(cartData); 
+    renderCart(); 
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     renderCart();
 });
@@ -129,4 +175,4 @@ function pindahHalaman(url) {
     } else {
         window.location.href = url;
     }
-}
+}   
