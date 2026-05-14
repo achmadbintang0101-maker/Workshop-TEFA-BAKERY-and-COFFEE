@@ -107,15 +107,16 @@ include '../Config/auth.php';
             <div class="admin-role">Tefa Bakery &amp; Coffee</div>
           </div>
         </div>
+        
         <div class="admin-stats">
           <div class="admin-stat">
-            <div class="admin-stat-label">Target</div>
-            <div class="admin-stat-value">50</div>
+            <div class="admin-stat-label">Target Penjualan</div>
+            <div class="admin-stat-value" id="uiTarget1">25</div>
             <div class="admin-stat-unit">Produk</div>
           </div>
           <div class="admin-stat">
-            <div class="admin-stat-label">Sale</div>
-            <div class="admin-stat-value">30</div>
+            <div class="admin-stat-label">Realisasi Penjualan</div>
+            <div class="admin-stat-value" id="uiRealisasi1">0</div>
             <div class="admin-stat-unit">Produk</div>
           </div>
         </div>
@@ -148,12 +149,14 @@ include '../Config/auth.php';
       </div>
       <div class="detail-item"><div class="detail-label">Jabatan</div><div class="detail-value">Administrator</div></div>
       <div class="detail-item"><div class="detail-label">Status</div><div class="detail-value" style="color:#3a9c4e">● Aktif</div></div>
-      <div class="detail-item"><div class="detail-label">Target Produksi</div><div class="detail-value big">50 <span style="font-size:14px;font-weight:500">produk</span></div></div>
-      <div class="detail-item"><div class="detail-label">Realisasi Sale</div><div class="detail-value big">30 <span style="font-size:14px;font-weight:500">produk</span></div></div>
+      
+      <div class="detail-item"><div class="detail-label">Target Penjualan</div><div class="detail-value big" id="uiTarget2">25 <span style="font-size:14px;font-weight:500">produk</span></div></div>
+      <div class="detail-item"><div class="detail-label">Realisasi Penjualan</div><div class="detail-value big" id="uiRealisasi2">0 <span style="font-size:14px;font-weight:500">produk</span></div></div>
     </div>
+    
     <div class="prog-wrap">
-      <div class="prog-labels"><span>Pencapaian Target</span><span>60%</span></div>
-      <div class="prog-bar"><div class="prog-fill" style="width:60%"></div></div>
+      <div class="prog-labels"><span>Pencapaian Target Hari Ini</span><span id="uiPersentase">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="uiBar" style="width:0%"></div></div>
     </div>
     <div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Tutup</button></div>
   </div>

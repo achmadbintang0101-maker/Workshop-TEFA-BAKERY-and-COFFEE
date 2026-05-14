@@ -33,12 +33,42 @@ async function fetchDashboard() {
         const data = await response.json();
 
         if (data.status === 'success') {
-            // Update Stat Cards Atas
+            // 1. Update Stat Cards Atas
             document.getElementById('valPendapatan').innerText = 'Rp ' + parseFloat(data.stats.pendapatan).toLocaleString('id-ID');
             document.getElementById('valPesanan').innerText = data.stats.pesanan_hari_ini;
             document.getElementById('valStok').innerText = data.stats.total_stok;
 
-            // Update Tabel Aktivitas
+            // ========================================================
+            // 2. UPDATE TARGET & REALISASI PENJUALAN (BARU)
+            // ========================================================
+            const target = 25;
+            
+            // Mengambil angka realisasi dari backend (jika belum ada, default 0)
+            const realisasi = data.stats.realisasi_hari_ini || 0; 
+            
+            // Hitung persentase (mentok di 100% agar bar tidak keluar jalur)
+            let persentase = (realisasi / target) * 100;
+            if (persentase > 100) persentase = 100; 
+
+            // Update UI Panel Kanan
+            const elTarget1 = document.getElementById('uiTarget1');
+            const elRealisasi1 = document.getElementById('uiRealisasi1');
+            if(elTarget1) elTarget1.innerText = target;
+            if(elRealisasi1) elRealisasi1.innerText = realisasi;
+
+            // Update UI Modal Detail Admin
+            const elTarget2 = document.getElementById('uiTarget2');
+            const elRealisasi2 = document.getElementById('uiRealisasi2');
+            if(elTarget2) elTarget2.innerHTML = `${target} <span style="font-size:14px;font-weight:500">produk</span>`;
+            if(elRealisasi2) elRealisasi2.innerHTML = `${realisasi} <span style="font-size:14px;font-weight:500">produk</span>`;
+
+            // Update Lebar Progress Bar & Teks Persentase
+            const elPersentase = document.getElementById('uiPersentase');
+            const elBar = document.getElementById('uiBar');
+            if(elPersentase) elPersentase.innerText = Math.round(persentase) + "%";
+            if(elBar) elBar.style.width = persentase + "%";
+
+            // 3. Update Tabel Aktivitas
             const tbody = document.getElementById('activityBody');
             if (data.activities.length > 0) {
                 tbody.innerHTML = data.activities.map(a => `
@@ -57,40 +87,27 @@ async function fetchDashboard() {
         showToast("Terjadi kesalahan jaringan", "error");
     }
 }
+
 // ── SET TANGGAL REAL-TIME ──
 function updateTanggalPesanan() {
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     const now = new Date();
-    
-    // Format: 12 Mei 2026
     const tanggalText = `${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
-    
-    // Masukkan ke dalam HTML
     const elTanggal = document.getElementById('tanggalPesanan');
-    if (elTanggal) {
-        elTanggal.innerText = tanggalText;
-    }
+    if (elTanggal) elTanggal.innerText = tanggalText;
 }
-
-// Jalankan fungsi saat file dimuat
-updateTanggalPesanan();
 
 // ── SET BULAN REAL-TIME UNTUK PENDAPATAN ──
 function updateBulanPendapatan() {
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     const now = new Date();
-    
-    // Format: Bulan Mei 2026
     const bulanText = `Bulan ${bulan[now.getMonth()]} ${now.getFullYear()}`;
-    
-    // Masukkan ke dalam HTML
     const elBulan = document.getElementById('bulanPendapatan');
-    if (elBulan) {
-        elBulan.innerText = bulanText;
-    }
+    if (elBulan) elBulan.innerText = bulanText;
 }
 
-// Jalankan fungsi saat file dimuat
+// Jalankan fungsi real-time saat file dimuat
+updateTanggalPesanan();
 updateBulanPendapatan();
 
 // ── TOAST ──

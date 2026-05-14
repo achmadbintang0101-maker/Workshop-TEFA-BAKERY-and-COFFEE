@@ -26,10 +26,22 @@ class Dashboard {
         $res_stok = mysqli_query($this->conn, $query_stok);
         $total_stok = $res_stok ? (int)mysqli_fetch_assoc($res_stok)['total'] : 0;
 
+        // ==========================================================
+        // D. REALISASI PENJUALAN (Jumlah item terjual hari ini saja)
+        // ==========================================================
+        $query_realisasi = "SELECT SUM(td.qty) as total_qty 
+                            FROM transaction_details td
+                            JOIN transactions t ON td.id_transaction = t.id_transaction
+                            WHERE DATE(t.created_at) = CURDATE() AND t.status = 'selesai'";
+        $res_realisasi = mysqli_query($this->conn, $query_realisasi);
+        $realisasi_hari_ini = $res_realisasi ? (int)mysqli_fetch_assoc($res_realisasi)['total_qty'] : 0;
+
+        // Kembalikan semua data ke Controller
         return [
             'pendapatan' => $total_pendapatan,
             'pesanan_hari_ini' => $pesanan_hari_ini,
-            'total_stok' => $total_stok
+            'total_stok' => $total_stok,
+            'realisasi_hari_ini' => $realisasi_hari_ini // <-- Angka ini akan dibaca oleh JS
         ];
     }
 

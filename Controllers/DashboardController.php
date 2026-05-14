@@ -12,10 +12,10 @@ $action = $_GET['action'] ?? '';
 if ($action === 'get_data') {
     header('Content-Type: application/json');
     
-    // Ambil Statistik Atas
+    // 1. Ambil Statistik Atas (Otomatis membawa data 'realisasi_hari_ini' dari Class)
     $stats = $dashObj->getStats();
     
-    // Ambil Data Aktivitas
+    // 2. Ambil Data Aktivitas
     $activities = [];
     $result_act = $dashObj->getAktivitasHariIni();
     
@@ -37,6 +37,7 @@ if ($action === 'get_data') {
         }
     }
 
+    // 3. Kembalikan balasan JSON ke JavaScript Frontend
     echo json_encode([
         'status' => 'success',
         'stats' => $stats,
