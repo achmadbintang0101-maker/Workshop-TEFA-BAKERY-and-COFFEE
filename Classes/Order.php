@@ -99,7 +99,7 @@ class Order {
     }
 
     // 5. CREATE: Buat Pesanan Manual dari Admin
-    public function createManualOrder($nama, $role, $status, $items) {
+    public function createManualOrder(string$nama, string$role, string$status, $items) {
         mysqli_begin_transaction($this->conn);
         try {
             // A. Simpan data pelanggan ke tabel customers

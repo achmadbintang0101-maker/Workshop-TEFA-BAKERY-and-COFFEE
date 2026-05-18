@@ -11,14 +11,18 @@ $conn = $database->getConnection();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    $email    = mysqli_real_escape_string($conn, $_POST['email']);
+    $email    = $_POST['email'];
     $password = $_POST['password'];
 
-    $query  = "SELECT * FROM users WHERE email = '$email'";
-    $result = mysqli_query($conn, $query);
+    $query  = "SELECT * FROM users WHERE email = ?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) === 1) {
         $row = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
 
         if (password_verify($password, $row['password'])) {
             // Jika COCOK, buat Session
@@ -42,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
     } else {
+        mysqli_stmt_close($stmt);
         // PERBAIKAN: Lempar parameter error email & simpan email yang diketik
         header("Location: Index.php?error=email&email=" . urlencode($email));
         exit;

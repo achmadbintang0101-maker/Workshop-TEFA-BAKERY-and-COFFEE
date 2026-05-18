@@ -84,7 +84,7 @@ class Finance {
     }   
 
     // 3. MENAMBAH DATA MANUAL
-    public function createManualFinance($tanggal, $jenis, $keterangan, $nominal, $status) {
+    public function createManualFinance(int$tanggal, string$jenis, string$keterangan, int$nominal, string$status) {
         $query = "INSERT INTO finances (tanggal, jenis, keterangan, nominal, status) VALUES (?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($this->conn, $query);
         
@@ -97,7 +97,7 @@ class Finance {
     }
 
     // 4. MENGHAPUS DATA MANUAL
-    public function deleteManualFinance($id) {
+    public function deleteManualFinance(int$id) {
         $query = "DELETE FROM finances WHERE id_finance = ?";
         $stmt = mysqli_prepare($this->conn, $query);
         mysqli_stmt_bind_param($stmt, "i", $id);

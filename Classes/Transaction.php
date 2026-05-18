@@ -36,7 +36,11 @@ class Transaction {
     }
 
     // Method KHUSUS untuk Customer Checkout
- public function createCustomerTransaction($nama, $role, $queue_number, $total, $tax, $grand_total, $items) {
+ public function createCustomerTransaction($nama, $role,  $queue_number, $total, $tax, $grand_total, $items) {
+        if (empty($items)) {
+            return false;
+        }
+
         mysqli_begin_transaction($this->conn);
 
         try {
@@ -146,8 +150,17 @@ class Transaction {
             while ($row = mysqli_fetch_assoc($result)) {
                 $id_p = $row['id_product'];
                 $qty = $row['qty'];
-                // Potong stok
-                mysqli_query($this->conn, "UPDATE products SET stok = stok - $qty WHERE id_product = $id_p");
+                
+                // Potong stok (dengan pengecekan agar tidak negatif)
+                $stmt_stok = mysqli_prepare($this->conn, "UPDATE products SET stok = stok - ? WHERE id_product = ? AND stok >= ?");
+                mysqli_stmt_bind_param($stmt_stok, "iii", $qty, $id_p, $qty);
+                mysqli_stmt_execute($stmt_stok);
+                
+                if (mysqli_stmt_affected_rows($stmt_stok) == 0) {
+                    // Jika stok kurang, lemparkan error untuk membatalkan
+                    throw new Exception("Stok tidak mencukupi untuk pesanan ini.");
+                }
+                mysqli_stmt_close($stmt_stok);
             }
             mysqli_stmt_close($stmt_items);
 
