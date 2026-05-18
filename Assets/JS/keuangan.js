@@ -129,34 +129,58 @@ function openInputModal() {
 async function saveFinanceData() {
   const btn = document.getElementById('btnSave');
   const tanggalRaw = document.getElementById('fTanggal').value;
-  const jenis = document.getElementById('fJenis').value;
+  let jenisRaw = document.getElementById('fJenis').value;
   const keterangan = document.getElementById('fKeterangan').value.trim();
   const nominal = parseFloat(document.getElementById('fNominal').value) || 0;
-  const status = document.getElementById('fStatus').value;
+  let statusRaw = document.getElementById('fStatus').value;
 
-  if (!tanggalRaw || !keterangan || nominal <= 0) { showToast('Lengkapi semua data dengan benar!', 'error'); return; }
+  // PERBAIKAN BUG: Pastikan tipe data 100% sesuai dengan ENUM di database
+  let jenis = jenisRaw.includes('Pemasukan') ? 'Pemasukan' : 'Penarikan';
+  let status = statusRaw.includes('Selesai') ? 'Selesai' : 'Menunggu';
+
+  if (!tanggalRaw || !keterangan || nominal <= 0) { 
+      showToast('Lengkapi semua data dengan benar!', 'error'); 
+      return; 
+  }
 
   const [y, m, d] = tanggalRaw.split('-');
   const payload = { tanggal: `${d}-${m}-${y}`, jenis, keterangan, nominal, status };
 
-  btn.innerText = "Menyimpan...";
-  btn.disabled = true;
+  if (btn) {
+      btn.innerText = "Menyimpan...";
+      btn.disabled = true;
+  }
 
   try {
       const res = await fetch('../Controllers/FinanceController.php?action=create', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
       });
+      
+      // Cek jika server PHP meledak/mengeluarkan error text bukan JSON
+      if (!res.ok) {
+          console.error("Server merespon dengan error:", await res.text());
+          showToast("Terjadi error di database. Cek console!", "error");
+          if (btn) { btn.innerText = "Simpan"; btn.disabled = false; }
+          return;
+      }
+
       const resData = await res.json();
       if (resData.status === 'success') {
           showToast(resData.message, 'success');
           closeModal();
           fetchKeuangan(); // Reload tabel
-      } else { showToast(resData.message, 'error'); }
-  } catch (err) { showToast("Gagal menghubungi server", "error"); } 
-  finally { btn.innerText = "Simpan"; btn.disabled = false; }
+      } else { 
+          showToast(resData.message, 'error'); 
+      }
+  } catch (err) { 
+      console.error("Fetch Error: ", err);
+      showToast("Gagal menghubungi server atau JSON tidak valid", "error"); 
+  } finally { 
+      if (btn) { btn.innerText = "Simpan"; btn.disabled = false; }
+  }
 }
-
 function openDelete(id) {
   const row = allData.find(r => r.id === id && r.source === 'manual');
   if(!row) return;

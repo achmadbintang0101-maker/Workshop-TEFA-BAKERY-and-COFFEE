@@ -83,27 +83,39 @@ class Finance {
         ];
     }   
 
-    // 3. MENAMBAH DATA MANUAL
-    public function createManualFinance(int$tanggal, string$jenis, string$keterangan, int$nominal, string$status) {
-        $query = "INSERT INTO finances (tanggal, jenis, keterangan, nominal, status) VALUES (?, ?, ?, ?, ?)";
-        $stmt = mysqli_prepare($this->conn, $query);
-        
-        // PERBAIKAN diubah menjadi "sssds" (String, String, String, Double, String)
-        mysqli_stmt_bind_param($stmt, "sssds", $tanggal, $jenis, $keterangan, $nominal, $status);
-        
-        $result = mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-        return $result;
+// 3. MENAMBAH DATA MANUAL
+    public function createManualFinance($tanggal, $jenis, $keterangan, $nominal, $status) {
+        try {
+            $query = "INSERT INTO finances (tanggal, jenis, keterangan, nominal, status) VALUES (?, ?, ?, ?, ?)";
+            $stmt = mysqli_prepare($this->conn, $query);
+            
+            mysqli_stmt_bind_param($stmt, "sssds", $tanggal, $jenis, $keterangan, $nominal, $status);
+            $result = mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+            
+            return $result;
+        } catch (mysqli_sql_exception $e) {
+            // Tangkap error agar PHP tidak crash
+            error_log("Database Error (createManualFinance): " . $e->getMessage());
+            return false;
+        }
     }
 
     // 4. MENGHAPUS DATA MANUAL
-    public function deleteManualFinance(int$id) {
-        $query = "DELETE FROM finances WHERE id_finance = ?";
-        $stmt = mysqli_prepare($this->conn, $query);
-        mysqli_stmt_bind_param($stmt, "i", $id);
-        $result = mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-        return $result;
+    public function deleteManualFinance($id) {
+        try {
+            $query = "DELETE FROM finances WHERE id_finance = ?";
+            $stmt = mysqli_prepare($this->conn, $query);
+            mysqli_stmt_bind_param($stmt, "i", $id);
+            
+            $result = mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+            
+            return $result;
+        } catch (mysqli_sql_exception $e) {
+            error_log("Database Error (deleteManualFinance): " . $e->getMessage());
+            return false;
+        }
     }
 }
 ?>

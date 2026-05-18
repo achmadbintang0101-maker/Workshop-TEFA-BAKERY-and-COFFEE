@@ -1,5 +1,5 @@
 // ==========================================
-// 1. FITUR SCROLL ACTIVE LINK (DARI UI BARU)
+// 1. FITUR SCROLL ACTIVE LINK 
 // ==========================================
 const sections = document.querySelectorAll("section");
 const navLinks = document.querySelectorAll(".navbar-links a:not(.btn-nav)");
@@ -28,7 +28,7 @@ window.addEventListener("scroll", () => {
 });
 
 // ==========================================
-// 2. LOGIKA MODAL LOGIN (DARI UI LAMA)
+// 2. LOGIKA MODAL LOGIN 
 // ==========================================
 const modal = document.getElementById("modalLogin");
 const btnBuka = document.getElementById("btnBukaLogin");
