@@ -27,7 +27,7 @@ if ($action === 'get_all_orders') {
     if ($result && mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             
-            // LOGIKA CERDAS: Penamaan Order ID
+            // LOGIKA : Penamaan Order ID
             // Jika nama_customer kosong = Pembeli langsung ke meja kasir
             if (empty($row['nama_customer'])) {
                 $orderIdText = "Walk-in (Kasir)";
@@ -40,8 +40,8 @@ if ($action === 'get_all_orders') {
             if (!empty($row['queue_number'])) {
                 $orderIdText .= " - " . $row['queue_number'];
             }
-
-            // LOGIKA CERDAS: Penyesuaian Status untuk UI Admin
+            
+            // LOGIKA : Penyesuaian Status untuk UI Admin
             // Di database kita pakai 'pending', tapi di UI Admin desainnya 'Proses'
             $status_ui = ucfirst($row['status']);
             if ($status_ui === 'Pending') {

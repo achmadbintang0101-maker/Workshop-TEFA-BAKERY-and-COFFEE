@@ -14,7 +14,7 @@ function updateMiniCart(lastAddedImg = null, lastAddedName = null) {
     
     const bottomImg = document.getElementById('bottom-img');
     const bottomName = document.getElementById('bottom-name');
-    const bottomPrice = document.getElementById('bottom-price');
+        const bottomPrice = document.getElementById('bottom-price');
     
     // Jika keranjang kosong
     if (cart.length === 0) {
@@ -93,6 +93,15 @@ function filterCategory(category, btnElement) {
     if (btnElement) {
         btnElement.classList.remove('inactive');
         btnElement.classList.add('active');
+    }
+
+    // =========================================================
+    // PERBAIKAN BUG: Ubah teks Header sesuai kategori yang diklik
+    // =========================================================
+    const headerTitle = document.getElementById('header-title');
+    if (headerTitle) {
+        // Mengubah huruf pertama menjadi huruf kapital (contoh: 'bakery' -> 'Bakery')
+        headerTitle.innerText = category.charAt(0).toUpperCase() + category.slice(1);
     }
 
     // Filter data berdasarkan kategori
