@@ -1,23 +1,42 @@
 <?php
-session_start();
+// ✅ FIX: Hapus session_start() di sini karena auth.php sudah memanggilnya
+// dengan pengecekan PHP_SESSION_NONE, sehingga tidak akan bentrok.
 
-include '../Config/auth.php';
+include '../Config/auth.php';  // <-- auth.php sudah handle session_start()
 include '../Classes/Database.php';
 include '../Classes/User.php';
 
 $database = new Database();
-$conn = $database->getConnection();
-$userObj = new User($conn);
+$conn     = $database->getConnection();
+$userObj  = new User($conn);
+
+// Hanya admin yang boleh akses halaman manajemen staff
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: ../Index.php");
+    exit;
+}
 
 // ==========================================
 // A. LOGIKA TAMBAH STAFF
 // ==========================================
 if (isset($_POST['simpan_staff'])) {
-    $username = (string)($_POST['username'] ?? '');
-    $nama     = (string)($_POST['nama'] ?? '');
-    $email    = (string)($_POST['email'] ?? '');
+    $username = trim((string)($_POST['username'] ?? ''));
+    $nama     = trim((string)($_POST['nama'] ?? ''));
+    $email    = trim((string)($_POST['email'] ?? ''));
     $password = (string)($_POST['password'] ?? '');
     $role     = (string)($_POST['role'] ?? 'kasir');
+
+    // Validasi dasar
+    if (empty($username) || empty($nama) || empty($email) || empty($password)) {
+        echo "<script>alert('Semua field wajib diisi!'); window.location='../admin/manajemen_staff.php';</script>";
+        exit;
+    }
+
+    // Validasi format email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "<script>alert('Format email tidak valid!'); window.location='../admin/manajemen_staff.php';</script>";
+        exit;
+    }
 
     $result = $userObj->createUser($username, $nama, $email, $password, $role);
 
@@ -34,7 +53,7 @@ if (isset($_POST['simpan_staff'])) {
 // B. LOGIKA HAPUS STAFF
 // ==========================================
 if (isset($_GET['action']) && $_GET['action'] == 'delete') {
-    $id_user = (int)($_GET['id'] ?? 0);
+    $id_user         = (int)($_GET['id'] ?? 0);
     $current_user_id = (int)($_SESSION['id_user']);
     
     if ($id_user > 0) {
