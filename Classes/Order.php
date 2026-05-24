@@ -37,27 +37,56 @@ class Order {
     }
 
     // =========================================================
-    // 3. UPDATE: Ubah status jadi 'selesai' & Potong Stok!
-    // BUG FIX: Semua query sekarang menggunakan prepared statement
+    // [BARU] CEK STOK: Dipakai sebelum input manual disimpan
+    // Mengembalikan array produk yang stoknya TIDAK MENCUKUPI
+    // =========================================================
+    public function validateStok(array $items): array {
+        $kekurangan = [];
+
+        $stmt = mysqli_prepare($this->conn, "SELECT id_product, name, stok FROM products WHERE id_product = ?");
+
+        foreach ($items as $item) {
+            $id_product = (int)$item['id'];
+            $qty_diminta = (int)$item['qty'];
+
+            mysqli_stmt_bind_param($stmt, "i", $id_product);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $produk  = mysqli_fetch_assoc($result);
+
+            if ($produk && $produk['stok'] < $qty_diminta) {
+                $kekurangan[] = [
+                    'nama'       => $produk['name'],
+                    'stok_ada'   => (int)$produk['stok'],
+                    'qty_diminta'=> $qty_diminta
+                ];
+            }
+        }
+
+        mysqli_stmt_close($stmt);
+        return $kekurangan; // Kosong = semua stok cukup
+    }
+
+    // =========================================================
+    // 3. UPDATE: Ubah status jadi 'selesai' & Potong Stok
+    // FIX: Semua query pakai prepared statement + cek stok negatif
     // =========================================================
     public function markOrderAsDone(int $id_transaction) {
-        // ✅ FIX: Gunakan prepared statement untuk cek status
-        $cek_stmt = mysqli_prepare($this->conn, "SELECT status FROM transactions WHERE id_transaction = ?");
-        mysqli_stmt_bind_param($cek_stmt, "i", $id_transaction);
-        mysqli_stmt_execute($cek_stmt);
-        $cek_result = mysqli_stmt_get_result($cek_stmt);
-        $cek_data   = mysqli_fetch_assoc($cek_result);
-        mysqli_stmt_close($cek_stmt);
+        // Cek status saat ini untuk mencegah pemotongan stok ganda
+        $stmt_cek = mysqli_prepare($this->conn, "SELECT status FROM transactions WHERE id_transaction = ?");
+        mysqli_stmt_bind_param($stmt_cek, "i", $id_transaction);
+        mysqli_stmt_execute($stmt_cek);
+        $cek_data = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_cek));
+        mysqli_stmt_close($stmt_cek);
 
         if ($cek_data && $cek_data['status'] === 'selesai') {
-            return true; // Sudah selesai, abaikan agar stok tidak terpotong 2x
+            return true; // Sudah selesai, tidak perlu potong stok lagi
         }
 
         mysqli_begin_transaction($this->conn);
         try {
             // A. Ambil detail barang untuk memotong stok
-            $query_items = "SELECT id_product, qty FROM transaction_details WHERE id_transaction = ?";
-            $stmt_items  = mysqli_prepare($this->conn, $query_items);
+            $stmt_items = mysqli_prepare($this->conn, "SELECT id_product, qty FROM transaction_details WHERE id_transaction = ?");
             mysqli_stmt_bind_param($stmt_items, "i", $id_transaction);
             mysqli_stmt_execute($stmt_items);
             $result_items = mysqli_stmt_get_result($stmt_items);
@@ -66,7 +95,7 @@ class Order {
                 $id_p = (int)$row['id_product'];
                 $qty  = (int)$row['qty'];
 
-                // ✅ FIX: Gunakan prepared statement untuk potong stok
+                // FIX: Prepared statement + cek stok tidak jadi negatif
                 $stmt_stok = mysqli_prepare($this->conn, "UPDATE products SET stok = stok - ? WHERE id_product = ? AND stok >= ?");
                 mysqli_stmt_bind_param($stmt_stok, "iii", $qty, $id_p, $qty);
                 mysqli_stmt_execute($stmt_stok);
@@ -79,8 +108,7 @@ class Order {
             mysqli_stmt_close($stmt_items);
 
             // B. Ubah status transaksi menjadi selesai
-            $query_update = "UPDATE transactions SET status = 'selesai' WHERE id_transaction = ?";
-            $stmt_update  = mysqli_prepare($this->conn, $query_update);
+            $stmt_update = mysqli_prepare($this->conn, "UPDATE transactions SET status = 'selesai' WHERE id_transaction = ?");
             mysqli_stmt_bind_param($stmt_update, "i", $id_transaction);
             mysqli_stmt_execute($stmt_update);
             mysqli_stmt_close($stmt_update);
@@ -97,18 +125,17 @@ class Order {
 
     // =========================================================
     // 4. DELETE: Hapus Data Pesanan dengan Aman
-    // BUG FIX: Hapus transaction_details juga pakai prepared statement
+    // FIX: Semua query pakai prepared statement
     // =========================================================
     public function deleteOrder(int $id_transaction) {
         mysqli_begin_transaction($this->conn);
         try {
-            // ✅ FIX: Gunakan prepared statement untuk hapus detail
+            // Hapus detail dulu (CASCADE sudah ada di FK, tapi eksplisit lebih aman)
             $stmt_detail = mysqli_prepare($this->conn, "DELETE FROM transaction_details WHERE id_transaction = ?");
             mysqli_stmt_bind_param($stmt_detail, "i", $id_transaction);
             mysqli_stmt_execute($stmt_detail);
             mysqli_stmt_close($stmt_detail);
 
-            // Hapus transaksi induk
             $stmt_trans = mysqli_prepare($this->conn, "DELETE FROM transactions WHERE id_transaction = ?");
             mysqli_stmt_bind_param($stmt_trans, "i", $id_transaction);
             $berhasil = mysqli_stmt_execute($stmt_trans);
@@ -124,13 +151,28 @@ class Order {
         }
     }
 
+    // =========================================================
     // 5. CREATE: Buat Pesanan Manual dari Admin
-    public function createManualOrder(string $nama, string $role, string $status, $items) {
+    // FIX: Ada validasi stok SEBELUM insert + prepared statement
+    // =========================================================
+    public function createManualOrder(string $nama, string $role, string $status, array $items) {
         mysqli_begin_transaction($this->conn);
         try {
+            // [BARU] Validasi stok terlebih dahulu jika status langsung 'selesai'
+            // Untuk status 'pending', stok dipotong nanti saat dikonfirmasi selesai
+            if ($status === 'selesai') {
+                $kekurangan = $this->validateStok($items);
+                if (!empty($kekurangan)) {
+                    $pesan = implode(', ', array_map(fn($k) => 
+                        "{$k['nama']} (ada: {$k['stok_ada']}, diminta: {$k['qty_diminta']})", 
+                        $kekurangan
+                    ));
+                    throw new Exception("STOK_KURANG: $pesan");
+                }
+            }
+
             // A. Simpan data pelanggan ke tabel customers
-            $query_customer = "INSERT INTO customers (nama_customer, role_customer) VALUES (?, ?)";
-            $stmt_customer  = mysqli_prepare($this->conn, $query_customer);
+            $stmt_customer = mysqli_prepare($this->conn, "INSERT INTO customers (nama_customer, role_customer) VALUES (?, ?)");
             mysqli_stmt_bind_param($stmt_customer, "ss", $nama, $role);
             mysqli_stmt_execute($stmt_customer);
             $id_customer = mysqli_insert_id($this->conn);
@@ -144,20 +186,18 @@ class Order {
             $tax         = $subtotal * 0.10;
             $grand_total = $subtotal + $tax;
 
-            // ✅ FIX: Nomor antrean pakai timestamp agar tidak duplikat
+            // FIX: Nomor antrean pakai timestamp agar tidak duplikat
             $queue_number = 'M-' . date('His') . rand(10, 99);
 
             // C. Simpan ke tabel transactions
-            $query_trans = "INSERT INTO transactions (id_customer, queue_number, total_price, tax, grand_total, status) VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt_trans  = mysqli_prepare($this->conn, $query_trans);
+            $stmt_trans = mysqli_prepare($this->conn, "INSERT INTO transactions (id_customer, queue_number, total_price, tax, grand_total, status) VALUES (?, ?, ?, ?, ?, ?)");
             mysqli_stmt_bind_param($stmt_trans, "isddds", $id_customer, $queue_number, $subtotal, $tax, $grand_total, $status);
             mysqli_stmt_execute($stmt_trans);
             $id_transaction = mysqli_insert_id($this->conn);
             mysqli_stmt_close($stmt_trans);
 
             // D. Simpan rincian barang ke transaction_details
-            $query_detail = "INSERT INTO transaction_details (id_transaction, id_product, qty, price_at_time, subtotal) VALUES (?, ?, ?, ?, ?)";
-            $stmt_detail  = mysqli_prepare($this->conn, $query_detail);
+            $stmt_detail = mysqli_prepare($this->conn, "INSERT INTO transaction_details (id_transaction, id_product, qty, price_at_time, subtotal) VALUES (?, ?, ?, ?, ?)");
 
             foreach ($items as $item) {
                 $id_product    = (int)$item['id'];
@@ -168,15 +208,15 @@ class Order {
                 mysqli_stmt_bind_param($stmt_detail, "iiidd", $id_transaction, $id_product, $qty, $price, $item_subtotal);
                 mysqli_stmt_execute($stmt_detail);
 
-                // E. Jika status langsung selesai, potong stok
+                // E. Jika status langsung LUNAS, potong stok (sudah dicek di atas)
                 if ($status === 'selesai') {
-                    // ✅ FIX: Gunakan prepared statement untuk potong stok
+                    // FIX: Prepared statement dengan double-check stok agar tidak minus
                     $stmt_stok = mysqli_prepare($this->conn, "UPDATE products SET stok = stok - ? WHERE id_product = ? AND stok >= ?");
                     mysqli_stmt_bind_param($stmt_stok, "iii", $qty, $id_product, $qty);
                     mysqli_stmt_execute($stmt_stok);
 
                     if (mysqli_stmt_affected_rows($stmt_stok) == 0) {
-                        throw new Exception("Stok tidak mencukupi untuk id_product: $id_product");
+                        throw new Exception("STOK_KURANG: Stok berubah saat proses berlangsung untuk id_product: $id_product");
                     }
                     mysqli_stmt_close($stmt_stok);
                 }
@@ -184,12 +224,18 @@ class Order {
             mysqli_stmt_close($stmt_detail);
 
             mysqli_commit($this->conn);
-            return true;
+            return ['success' => true];
 
         } catch (Exception $e) {
             mysqli_rollback($this->conn);
-            error_log("Gagal buat pesanan manual: " . $e->getMessage());
-            return false;
+            $msg = $e->getMessage();
+            error_log("Gagal buat pesanan manual: $msg");
+
+            // Kembalikan pesan stok kurang agar bisa ditampilkan ke admin
+            if (str_starts_with($msg, 'STOK_KURANG:')) {
+                return ['success' => false, 'message' => str_replace('STOK_KURANG: ', '', $msg)];
+            }
+            return ['success' => false, 'message' => 'Gagal menyimpan pesanan ke database.'];
         }
     }
 }
