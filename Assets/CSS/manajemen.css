@@ -1,26 +1,31 @@
 /* Assets/CSS/manajemen.css */
 
 .container {
-  padding: 30px;
+  padding: 15px 30px; /* Padding atas-bawah dikurangi dari 30px ke 15px */
 }
 
 .card {
   background: white;
-  padding: 25px;
-  border-radius: 15px;
+  padding: 20px; /* Padding card dikurangi dari 25px ke 20px */
+  border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  margin-bottom: 30px;
+  margin-bottom: 15px; /* Jarak antar card dikurangi dari 30px ke 15px */
 }
 
 .card h3 {
   color: #5c3d2e;
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* Dibuat lebih rapat */
+  font-size: 1.1rem;
+}
+
+.card p {
+  margin-bottom: 12px !important; /* Memangkas jarak teks deskripsi dengan form */
 }
 
 .form-row {
   display: flex;
-  gap: 20px;
-  margin-bottom: 15px;
+  gap: 15px; /* Gap antar kolom dikurangi dari 20px ke 15px */
+  margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
@@ -32,16 +37,16 @@
 .input-group label {
   font-weight: 600;
   color: #555;
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* Sedikit disesuaikan agar proporsional */
 }
 
 input,
 select {
   width: 100%;
-  padding: 12px;
+  padding: 10px; /* Padding input dikurangi dari 12px ke 10px */
   border: 1px solid #ddd;
   border-radius: 8px;
-  margin-top: 5px;
+  margin-top: 4px;
   outline: none;
 }
 
@@ -53,12 +58,13 @@ select:focus {
 .btn-add {
   background: #5c3d2e;
   color: white;
-  padding: 12px 25px;
+  padding: 10px 20px; /* Padding tombol dikurangi */
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
   transition: 0.3s;
+  margin-top: 5px;
 }
 
 .btn-add:hover {
@@ -69,14 +75,15 @@ select:focus {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 th,
 td {
   text-align: left;
-  padding: 15px;
+  padding: 10px 12px; /* Padding sel tabel dikurangi dari 15px ke 10px */
   border-bottom: 1px solid #eee;
+  font-size: 0.9rem; /* Ukuran font tabel sedikit dirapatkan */
 }
 
 th {
@@ -86,9 +93,9 @@ th {
 
 /* Status Badge */
 .badge {
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: bold;
 }
 
@@ -108,4 +115,36 @@ th {
   background: none;
   cursor: pointer;
   font-weight: 600;
+}
+
+/* =======================================================
+   TABEL STAFF — Scrollable
+   ======================================================= */
+.table-scroll-wrap {
+    max-height: 230px; /* Disesuaikan agar lebih proporsional di layar */
+    overflow-y: auto;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+.table-scroll-wrap::-webkit-scrollbar {
+    width: 5px;
+}
+.table-scroll-wrap::-webkit-scrollbar-track {
+    background: #faf5f0;
+    border-radius: 4px;
+}
+.table-scroll-wrap::-webkit-scrollbar-thumb {
+    background: #CBA57A;
+    border-radius: 4px;
+}
+
+.table-scroll-wrap table {
+    margin-top: 0;
+}
+.table-scroll-wrap thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #faf5f0;
+    box-shadow: 0 1px 0 #eee;
 }

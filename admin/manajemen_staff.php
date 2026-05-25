@@ -29,7 +29,7 @@ $tampil_staff = $userObj->getAllUsers();
 
     <div class="main">
         <div class="container">
-            <h2 style="color: #5C3D2E; margin-bottom: 25px;">Manajemen Data Staff</h2>
+            <h2 style="color: #5C3D2E; margin-bottom: 15px; margin-top: 0;">Manajemen Data Staff</h2>
 
             <div class="card">
                 <h3>+ Tambah Staff Baru</h3>
@@ -68,37 +68,39 @@ $tampil_staff = $userObj->getAllUsers();
 
             <div class="card">
                 <h3>Daftar Staff Terdaftar</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Lengkap</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $no=1; while($row = mysqli_fetch_assoc($tampil_staff)) : ?>
-                        <tr>
-                            <td><?= $no++; ?></td>
-                            <td><strong><?= $row['nama']; ?></strong></td>
-                            <td><?= $row['email']; ?></td>
-                            <td>
-                                <span class="badge <?= $row['role'] == 'admin' ? 'badge-admin' : 'badge-kasir'; ?>">
-                                    <?= strtoupper($row['role']); ?>
-                                </span>
-                            </td>
-                            <td>
-                              <a href="../Controllers/UserController.php?action=delete&id=<?= $row['id_user']; ?>" 
-   class="btn-delete" 
-   onclick="return confirm('Yakin ingin menghapus staff ini?')">Hapus</a>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
+                
+                <div class="table-scroll-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Lengkap</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no=1; while($row = mysqli_fetch_assoc($tampil_staff)) : ?>
+                            <tr>
+                                <td><?= $no++; ?></td>
+                                <td><strong><?= $row['nama']; ?></strong></td>
+                                <td><?= $row['email']; ?></td>
+                                <td>
+                                    <span class="badge <?= $row['role'] == 'admin' ? 'badge-admin' : 'badge-kasir'; ?>">
+                                        <?= strtoupper($row['role']); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                  <a href="../Controllers/UserController.php?action=delete&id=<?= $row['id_user']; ?>" 
+                                     class="btn-delete" 
+                                     onclick="return confirm('Yakin ingin menghapus staff ini?')">Hapus</a>
+                                </td>
+                            </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div></div>
         </div>
     </div>
 
