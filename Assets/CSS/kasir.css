@@ -317,3 +317,162 @@ body {
     border-bottom: 1px solid #E0D5CE; 
     padding-bottom: 8px; 
 }
+
+
+/* =======================================================
+   MODAL KASIR — Detail Pesanan (clean, no card coklat)
+   ======================================================= */
+.modal-kasir-wrap {
+    background: #FDF9F6;
+    width: 90%;
+    max-width: 440px;
+    max-height: 90vh;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Header coklat tua */
+.modal-kasir-header {
+    background: #3A2318;
+    color: #fff;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+.modal-kasir-label {
+    font-size: 0.78rem;
+    color: #D3C5BD;
+    margin-bottom: 3px;
+}
+.modal-kasir-id {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #CBA57A;
+    letter-spacing: 0.5px;
+}
+.modal-kasir-date {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #EAE0D5;
+}
+.modal-kasir-time {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #CBA57A;
+    margin-top: 4px;
+    text-align: right;
+}
+
+/* Body scrollable */
+.modal-kasir-body {
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+.modal-kasir-body::-webkit-scrollbar { width: 4px; }
+.modal-kasir-body::-webkit-scrollbar-track { background: #F0E8E2; border-radius: 4px; }
+.modal-kasir-body::-webkit-scrollbar-thumb { background: #CBA57A; border-radius: 4px; }
+
+/* Label section */
+.modal-kasir-section {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6D3D22;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #D3C5BD;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+/* Baris info pelanggan */
+.modal-kasir-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #EDE5DF;
+}
+.modal-kasir-key {
+    color: #999;
+    font-size: 0.88rem;
+}
+.modal-kasir-val {
+    color: #222;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-align: right;
+    max-width: 60%;
+}
+
+/* Baris item pesanan — bersih tanpa card */
+.modal-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #EDE5DF;
+}
+.modal-item-row:last-child { border-bottom: none; }
+.modal-item-left { display: flex; flex-direction: column; gap: 2px; }
+.modal-item-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #3A2318;
+}
+.modal-item-sub {
+    font-size: 0.78rem;
+    color: #999;
+}
+.modal-item-price {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #3A2318;
+    white-space: nowrap;
+    padding-left: 12px;
+}
+
+/* Baris total */
+.modal-kasir-total {
+    background: #3A2318;
+    border-radius: 8px;
+    padding: 13px 16px;
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 12px;
+}
+
+/* Footer tombol — selalu di bawah */
+.modal-kasir-footer {
+    padding: 14px 20px;
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid #EDE5DF;
+    background: #FDF9F6;
+    flex-shrink: 0;
+}
+.btn-kasir-back, .btn-kasir-batal, .btn-kasir-konfirm {
+    flex: 1;
+    padding: 12px 8px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.btn-kasir-back   { background: #CBA57A; color: #fff; }
+.btn-kasir-batal  { background: #e53935; color: #fff; }
+.btn-kasir-konfirm { background: #3A2318; color: #fff; }
+.btn-kasir-back:hover    { background: #b8915f; }
+.btn-kasir-batal:hover   { background: #c62828; }
+.btn-kasir-konfirm:hover { background: #5a3520; }

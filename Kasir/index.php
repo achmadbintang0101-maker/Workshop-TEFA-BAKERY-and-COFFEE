@@ -104,56 +104,60 @@ $produk_kasir = $productObj->getAvailableProducts();
 </div>
 
 <!-- MODAL DETAIL PESANAN -->
-<div id="detail-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center;">
-    <div style="background: #FDF9F6; width: 90%; max-width: 420px; border-radius: 0; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.3); font-family: 'Inter', sans-serif;">
-        
-        <div style="background: #3A2318; color: #fff; padding: 25px; display: flex; justify-content: space-between; align-items: flex-start;">
+<div id="detail-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; justify-content:center; align-items:center;">
+    <div class="modal-kasir-wrap">
+
+        <!-- HEADER -->
+        <div class="modal-kasir-header">
             <div>
-                <div style="font-size: 0.85rem; color: #D3C5BD; margin-bottom: 5px;">Order id</div>
-                <div id="modal-order-id" style="font-size: 2rem; font-weight: 800; color: #CBA57A;">#...</div>
+                <div class="modal-kasir-label">No. Antrian</div>
+                <div id="modal-order-id" class="modal-kasir-id">#...</div>
             </div>
-            <div style="text-align: right;">
-                <div id="modal-date" style="font-size: 0.9rem; font-weight: 600; color: #EAE0D5;">...</div>
-                <div id="modal-time" style="font-size: 1.3rem; font-weight: 700; color: #CBA57A; margin-top: 5px;">...</div>
+            <div style="text-align:right;">
+                <div id="modal-date" class="modal-kasir-date">...</div>
+                <div id="modal-time" class="modal-kasir-time">...</div>
             </div>
         </div>
 
-        <div class="modal-body-detail">
-            <div class="section-title-modal">INFORMASI PELANGGAN</div>
-            <div class="info-row">
-                <span style="color: #888; font-weight: 500; font-size: 0.95rem;">Nama Pemesan</span>
-                <span id="modal-cust-name" style="color: #222; font-weight: 700; font-size: 0.95rem;">...</span>
+        <!-- BODY: scroll keseluruhan isi -->
+        <div class="modal-kasir-body">
+
+            <!-- Info pelanggan -->
+            <div class="modal-kasir-section">INFORMASI PELANGGAN</div>
+            <div class="modal-kasir-row">
+                <span class="modal-kasir-key">Nama Pemesan</span>
+                <span id="modal-cust-name" class="modal-kasir-val">...</span>
             </div>
-            <div class="info-row">
-                <span style="color: #888; font-weight: 500; font-size: 0.95rem;">Jenis Pesanan</span>
-                <span id="modal-order-type" style="color: #222; font-weight: 700; font-size: 0.95rem;">Take Away</span>
+            <div class="modal-kasir-row">
+                <span class="modal-kasir-key">Jenis Pesanan</span>
+                <span id="modal-order-type" class="modal-kasir-val">Belum Ditentukan</span>
             </div>
-            <div class="info-row" style="margin-bottom: 25px;">
-                <span style="color: #888; font-weight: 500; font-size: 0.95rem;">No. Antrian</span>
-                <span id="modal-queue" style="color: #222; font-weight: 700; font-size: 0.95rem;">...</span>
+            <div class="modal-kasir-row" style="margin-bottom:16px;">
+                <span class="modal-kasir-key">No. Antrian</span>
+                <span id="modal-queue" class="modal-kasir-val">...</span>
             </div>
 
-            <div class="section-title-modal">DETAIL PESANAN</div>
+            <!-- Detail pesanan -->
+            <div class="modal-kasir-section">DETAIL PESANAN</div>
             <div id="modal-items-container">
-                <!-- Looping Item Belanjaan Disini -->
+                <!-- item diisi JS -->
             </div>
-            
-            <div style="background: #3A2318; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; color: #fff; font-weight: 700; margin-bottom: 25px; font-size: 1.1rem; margin-top: 15px;">
+
+            <!-- Total -->
+            <div class="modal-kasir-total">
                 <span>Total</span>
                 <span id="modal-total">...</span>
             </div>
-
-            <!-- Simpan ID Transaksi Tersembunyi untuk Konfirmasi -->
-            <input type="hidden" id="active-trans-id">
-
-           <div style="display: flex; gap: 10px;">
-                <button onclick="closeDetailModal()" style="flex: 1; padding: 14px; background: #CBA57A; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">Kembali</button>
-                
-                <button onclick="batalkanPesanan()" style="flex: 1; padding: 14px; background: #e53935; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;" id="btn-batal">Batalkan</button>
-                
-                <button onclick="konfirmasiPesanan()" style="flex: 1; padding: 14px; background: #3A2318; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;" id="btn-konfirmasi">Konfirmasi</button>
-            </div>
         </div>
+
+        <!-- FOOTER tombol -->
+        <div class="modal-kasir-footer">
+            <input type="hidden" id="active-trans-id">
+            <button onclick="closeDetailModal()" class="btn-kasir-back">Kembali</button>
+            <button onclick="batalkanPesanan()" class="btn-kasir-batal" id="btn-batal">Batalkan</button>
+            <button onclick="konfirmasiPesanan()" class="btn-kasir-konfirm" id="btn-konfirmasi">Konfirmasi</button>
+        </div>
+
     </div>
 </div>
 

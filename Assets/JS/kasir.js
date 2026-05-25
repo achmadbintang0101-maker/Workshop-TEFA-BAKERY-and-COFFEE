@@ -216,17 +216,14 @@ async function openDetailModal(id_transaction) {
             // Looping List Barang Belanjaan
             let itemsHTML = '';
             data.items.forEach(item => {
+                const hargaSatuan = Number(item.subtotal) / Number(item.qty);
                 itemsHTML += `
-                <div style="background: #CBA57A; border-radius: 8px; padding: 15px; margin-bottom: 10px; color: #111;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div>
-                                <div>${item.product_name}</div>
-                                <div style="font-size: 0.8rem; color: #4A2C1D;">Qty : ${item.qty}</div>
-                            </div>
-                        </div>
-                        <div>Rp ${Number(item.subtotal).toLocaleString('id-ID')}</div>
+                <div class="modal-item-row">
+                    <div class="modal-item-left">
+                        <div class="modal-item-name">${item.product_name}</div>
+                        <div class="modal-item-sub">${item.qty} x Rp ${hargaSatuan.toLocaleString('id-ID')}</div>
                     </div>
+                    <div class="modal-item-price">Rp ${Number(item.subtotal).toLocaleString('id-ID')}</div>
                 </div>`;
             });
             document.getElementById('modal-items-container').innerHTML = itemsHTML;
